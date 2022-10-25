@@ -1,0 +1,9 @@
+<template>
+  <lightning-card>
+    <c-region-picker onchangeregion={handleChangeRegion}></c-region-picker>
+    <c-warehouse-picker
+      region={region}
+      changewarehouse={handleChangeWarehouse}
+    ></c-warehouse-picker>
+  </lightning-card>
+</template>
