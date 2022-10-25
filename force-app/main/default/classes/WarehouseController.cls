@@ -4,9 +4,21 @@ public with sharing class WarehouseController {
       SELECT Name, LocationId__c
       FROM Warehouse__c
       WHERE Id = :warehouseId
+      WITH SECURITY_ENFORCED
       LIMIT 1
     ];
     warehouse.LocationId__c = locationId;
     update warehouse;
+  }
+
+  @AuraEnabled(cacheable=true)
+  public static List<Warehouse__c> getWarehousesInRegion(String regionId) {
+    return [
+      SELECT Id, Name
+      FROM Warehouse__c
+      WHERE RegionId__c = :regionId
+      WITH SECURITY_ENFORCED
+      ORDER BY NAME
+    ];
   }
 }
