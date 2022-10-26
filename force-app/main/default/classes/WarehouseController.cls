@@ -12,7 +12,7 @@ public with sharing class WarehouseController {
   }
 
   @AuraEnabled(cacheable=true)
-  public static List<Warehouse__c> getWarehousesInRegion(String regionId) {
+  public static List<Warehouse__c> getWarehousesByRegionId(String regionId) {
     return [
       SELECT Id, Name
       FROM Warehouse__c
@@ -20,5 +20,9 @@ public with sharing class WarehouseController {
       WITH SECURITY_ENFORCED
       ORDER BY NAME
     ];
+  }
+
+  @AuraEnabled
+  public static List<ProductItem> getProductsByWarehouseId(String warehouseId) {
   }
 }
