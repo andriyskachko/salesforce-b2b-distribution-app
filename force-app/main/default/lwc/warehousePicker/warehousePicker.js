@@ -1,6 +1,6 @@
 import { LightningElement, wire, track, api } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
-import getWarehousesByRegionId from "@salesforce/apex/WarehouseController.getWarehousesByRegionId";
+import getWarehousesInRegion from "@salesforce/apex/WarehouseController.getWarehousesInRegion";
 
 export default class WarehousePicker extends LightningElement {
   @api region;
@@ -13,7 +13,7 @@ export default class WarehousePicker extends LightningElement {
     return this.optionsArray;
   }
 
-  @wire(getWarehousesByRegionId, { regionId: "$region" })
+  @wire(getWarehousesInRegion, { regionId: "$region" })
   warehouses({ error, data }) {
     if (data) {
       this.optionsArray = data.map((warehouse) => {
