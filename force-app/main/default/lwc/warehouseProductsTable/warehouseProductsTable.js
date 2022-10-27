@@ -5,7 +5,7 @@ import {
   subscribe,
   unsubscribe
 } from "lightning/messageService";
-import warehouseSelected from "@salesforce/messageChannel/WarehouseSelectedChannel__c";
+import warehouseSelectedChannel from "@salesforce/messageChannel/WarehouseSelectedChannel__c";
 
 const COLUMNS = [
   {
@@ -66,7 +66,7 @@ export default class WarehouseProductsTable extends LightningElement {
     if (!this.subscription) {
       this.subscription = subscribe(
         this.messageContext,
-        warehouseSelected,
+        warehouseSelectedChannel,
         (message) => this.handleWarehouseSelected(message)
       );
     }

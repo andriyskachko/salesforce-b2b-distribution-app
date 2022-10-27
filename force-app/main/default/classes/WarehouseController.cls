@@ -60,4 +60,15 @@ public with sharing class WarehouseController {
 
     return lstProductItem;
   }
+
+  @AuraEnabled(cacheable=true)
+  public static Warehouse__c getWarehouseInfoById(String warehouseId) {
+    return [
+      SELECT Id, Name, LocationId__c, LocationId__r.Name
+      FROM Warehouse__c
+      WHERE Id = :warehouseId
+      WITH SECURITY_ENFORCED
+      LIMIT 1
+    ];
+  }
 }

@@ -1,0 +1,18 @@
+<template>
+  <lightning-card class="slds-m-top_medium slds-m-bottom_x-large">
+    <div if:true={warehouseInfo} class="slds-p-around_medium lgc-bg">
+      <lightning-tile
+        label="Manage Location"
+        type="media"
+        href={warehouseInfo.locationUrl}
+      >
+        <lightning-icon
+          slot="media"
+          icon-name="standard:address"
+        ></lightning-icon>
+        <p title="Record Link">{warehouseInfo.locationName}</p>
+      </lightning-tile>
+    </div>
+    <h1 if:false={warehouseInfo}>Select Warehouse First</h1>
+  </lightning-card>
+</template>
