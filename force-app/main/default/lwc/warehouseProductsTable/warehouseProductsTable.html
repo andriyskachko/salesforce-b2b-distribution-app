@@ -3,6 +3,12 @@
     <lightning-datatable
       if:true={warehouseId}
       key-field="id"
+      hide-checkbox-column
+      default-sort-direction={defaultSortDirection}
+      sorted-direction={sortDirection}
+      sorted-by={sortedBy}
+      onsort={handleSort}
+      onsave={handleSave}
       data={data}
       columns={columns}
     >

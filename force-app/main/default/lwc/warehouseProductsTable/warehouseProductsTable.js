@@ -1,4 +1,4 @@
-import { LightningElement, track, wire } from "lwc";
+import { LightningElement, wire } from "lwc";
 import getProductItemsInWarehouse from "@salesforce/apex/WarehouseController.getProductItemsInWarehouse";
 import {
   MessageContext,
@@ -13,24 +13,30 @@ const COLUMNS = [
     fieldName: "ProductItemUrl",
     type: "url",
     typeAttributes: { label: { fieldName: "ProductItemNumber" } },
-    target: "_blank"
+    target: "_blank",
+    sortable: true
   },
   {
     label: "Product",
     fieldName: "ProductUrl",
     type: "url",
     typeAttributes: { label: { fieldName: "ProductName" } },
-    target: "_blank"
+    target: "_blank",
+    sortable: true
   },
   {
     label: "Quantity on site",
-    fieldName: "QuantityOnHand"
+    fieldName: "QuantityOnHand",
+    sortable: true
   }
 ];
 
 export default class WarehouseProductsTable extends LightningElement {
   columns = COLUMNS;
-  @track warehouseId;
+  warehouseId;
+  defaultSortDirection = "asc";
+  sortDirection = "asc";
+  sortedBy;
 
   subscription;
   data = [];
@@ -80,5 +86,23 @@ export default class WarehouseProductsTable extends LightningElement {
   handleWarehouseSelected(message) {
     const { warehouseId } = message;
     this.warehouseId = warehouseId;
+  }
+
+  handleSort(event) {
+    this.sortedBy = event.detail.fieldName;
+    this.sortDirection = event.detail.sortDirection;
+    this.sortData(this.sortedBy, this.sortDirection);
+  }
+
+  sortData(fieldName, direction) {
+    const parsedData = JSON.parse(JSON.stringify(this.data));
+    const key = (a) => a[fieldName];
+    const isReverse = direction === "asc" ? 1 : -1;
+    parsedData.sort((a, b) => {
+      a = key(a) ? key(a) : "";
+      b = key(b) ? key(b) : "";
+      return isReverse * ((a > b) - (b > a));
+    });
+    this.data = parsedData;
   }
 }
