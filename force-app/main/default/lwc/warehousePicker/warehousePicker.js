@@ -1,4 +1,6 @@
 import { LightningElement, wire, track, api } from "lwc";
+import { publish, MessageContext } from "lightning/messageService";
+import warehouseSelected from "@salesforce/messageChannel/WarehouseSelectedChannel__c";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getWarehousesInRegion from "@salesforce/apex/WarehouseController.getWarehousesInRegion";
 
@@ -9,9 +11,8 @@ export default class WarehousePicker extends LightningElement {
   @track placeHolder = "Select Region first";
   @track disabled = true;
 
-  get options() {
-    return this.optionsArray;
-  }
+  @wire(MessageContext)
+  messageContext;
 
   @wire(getWarehousesInRegion, { regionId: "$region" })
   warehouses({ error, data }) {
@@ -41,14 +42,21 @@ export default class WarehousePicker extends LightningElement {
 
   handleChange(event) {
     this.value = event.detail.value;
-    const changeEvent = new CustomEvent("changewarehouse", {
-      detail: this.value
-    });
-    this.dispatchEvent(changeEvent);
+    this.publishPayload();
   }
 
   @api
   resetWarehouse() {
     this.value = "";
+    this.publishPayload();
+  }
+
+  publishPayload() {
+    const payload = { warehouseId: this.value };
+    publish(this.messageContext, warehouseSelected, payload);
+  }
+
+  get options() {
+    return this.optionsArray;
   }
 }

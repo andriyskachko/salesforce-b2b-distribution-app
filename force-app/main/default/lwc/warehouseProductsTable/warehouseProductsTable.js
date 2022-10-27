@@ -1,5 +1,11 @@
-import { LightningElement, wire, track, api } from "lwc";
+import { LightningElement, track, wire } from "lwc";
 import getProductItemsInWarehouse from "@salesforce/apex/WarehouseController.getProductItemsInWarehouse";
+import {
+  MessageContext,
+  subscribe,
+  unsubscribe
+} from "lightning/messageService";
+import warehouseSelected from "@salesforce/messageChannel/WarehouseSelectedChannel__c";
 
 const COLUMNS = [
   {
@@ -24,8 +30,13 @@ const COLUMNS = [
 
 export default class WarehouseProductsTable extends LightningElement {
   columns = COLUMNS;
-  @api warehouseId = "a005E00000CdjNQQAZ";
-  @track data = [];
+  @track warehouseId;
+
+  subscription;
+  data = [];
+
+  @wire(MessageContext)
+  messageContext;
 
   @wire(getProductItemsInWarehouse, { warehouseId: "$warehouseId" })
   getProductItems({ error, data }) {
@@ -41,5 +52,33 @@ export default class WarehouseProductsTable extends LightningElement {
     } else if (error) {
       this.error = error;
     }
+  }
+
+  connectedCallback() {
+    this.subscribeToMessageChannel();
+  }
+
+  disconnectedCallback() {
+    this.unsubscribeMessageChannel();
+  }
+
+  subscribeToMessageChannel() {
+    if (!this.subscription) {
+      this.subscription = subscribe(
+        this.messageContext,
+        warehouseSelected,
+        (message) => this.handleWarehouseSelected(message)
+      );
+    }
+  }
+
+  unsubscribeMessageChannel() {
+    unsubscribe(this.subscription);
+    this.subscription = null;
+  }
+
+  handleWarehouseSelected(message) {
+    const { warehouseId } = message;
+    this.warehouseId = warehouseId;
   }
 }
