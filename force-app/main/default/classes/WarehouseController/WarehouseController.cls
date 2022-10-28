@@ -84,7 +84,7 @@ public with sharing class WarehouseController {
     .LocationId__c;
 
     List<Fulfilment_Request__c> lstFulfilmentReq = [
-      SELECT Id, Name, Assigned_To__c, Fulfilled__c
+      SELECT Id, Name, Assigned_To__c, Fulfilled__c, Due_Date__c
       FROM Fulfilment_Request__c
       WHERE LocationId__c = :locationId
       WITH SECURITY_ENFORCED
