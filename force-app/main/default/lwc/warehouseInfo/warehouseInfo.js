@@ -23,11 +23,9 @@ export default class WarehouseInfo extends LightningElement {
         ...data
       };
       this.error = undefined;
-      console.log(this.warehouseInfo);
     } else if (error) {
       this.error = error;
       this.warehouseInfo = undefined;
-      console.log(this.error);
     }
   }
 
