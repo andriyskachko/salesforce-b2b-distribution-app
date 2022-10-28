@@ -1,6 +1,5 @@
-import { LightningElement, wire } from "lwc";
+import { LightningElement, wire, track } from "lwc";
 import Fulfilment_Request_Name_FIELD from "@salesforce/schema/Fulfilment_Request__c.Name";
-import Fulfilment_Request_Fullfilled__c_FIELD from "@salesforce/schema/Fulfilment_Request__c.Fulfilled__c";
 import Fulfilment_Request_Due_Date__c_FIELD from "@salesforce/schema/Fulfilment_Request__c.Due_Date__c";
 import Fulfilment_Request_Assigned_To__c_FIELD from "@salesforce/schema/Fulfilment_Request__c.Assigned_To__c";
 import getFulfilmentRequestsByWarehouseId from "@salesforce/apex/WarehouseController.getFulfilmentRequestsByWarehouseId";
@@ -41,7 +40,7 @@ const COLUMNS = [
   },
   {
     label: "Fulfilled",
-    fieldName: Fulfilment_Request_Fullfilled__c_FIELD.fieldApiName,
+    fieldName: "RequestFulfilled",
     type: "text",
     sortable: true
   }
@@ -54,19 +53,19 @@ export default class WarehouseFulfilmentRequestsHistory extends LightningElement
   defaultSortDirection = "asc";
   sortDirection = "asc";
   sortedBy;
+  @track data;
 
   @wire(getFulfilmentRequestsByWarehouseId, { warehouseId: "$warehouseId" })
   wiredFulfilmentRequestsHistory({ error, data }) {
     if (data) {
-      this.data = {
-        RequestUrl: "/" + data.Id,
-        RequestName: data.Name,
-        DueDate: data.Due_Date__c,
-        Fulfilled: data.Fulfilled__c,
-        AssignedTo: data.Assigned_To__c
-      };
+      this.data = data.map((record) => {
+        return {
+          RequestUrl: "/" + record.Id,
+          RequestFulfilled: record.Fulfilled__c ? "Yes" : "No",
+          ...record
+        };
+      });
       this.error = undefined;
-      console.log(this.data);
     } else if (error) {
       this.data = undefined;
       this.error = error;
@@ -102,7 +101,6 @@ export default class WarehouseFulfilmentRequestsHistory extends LightningElement
   handleWarehouseSelected(message) {
     const { warehouseId } = message;
     this.warehouseId = warehouseId;
-    console.log(warehouseId);
   }
 
   handleSort(event) {
