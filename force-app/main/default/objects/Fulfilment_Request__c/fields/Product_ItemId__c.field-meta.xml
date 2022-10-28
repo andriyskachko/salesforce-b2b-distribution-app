@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Product_ItemId__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <externalId>false</externalId>
+    <label>Product Item</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage
+    >Such Product Item does not exist on the selected Location.</errorMessage>
+        <filterItems>
+            <field>$Source.LocationId__c</field>
+            <operation>equals</operation>
+            <valueField>ProductItem.LocationId</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
+    <referenceTo>ProductItem</referenceTo>
+    <relationshipLabel>Fulfilment Requests</relationshipLabel>
+    <relationshipName>Fulfilment_Requests</relationshipName>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>
