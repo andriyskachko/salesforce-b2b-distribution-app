@@ -1,5 +1,7 @@
 import { LightningElement, wire } from "lwc";
 import getProductItemsInWarehouse from "@salesforce/apex/WarehouseController.getProductItemsInWarehouse";
+import Product_Item_Number_FIELD from "@salesforce/schema/ProductItem.ProductItemNumber";
+import Product_Item_Quantity_On_Hand_FIELD from "@salesforce/schema/ProductItem.QuantityOnHand";
 import {
   MessageContext,
   subscribe,
@@ -12,12 +14,14 @@ const COLUMNS = [
     label: "Product Item Number",
     fieldName: "ProductItemUrl",
     type: "url",
-    typeAttributes: { label: { fieldName: "ProductItemNumber" } },
+    typeAttributes: {
+      label: { fieldName: Product_Item_Number_FIELD.fieldApiName }
+    },
     target: "_blank",
     sortable: true
   },
   {
-    label: "Product",
+    label: "Product Name",
     fieldName: "ProductUrl",
     type: "url",
     typeAttributes: { label: { fieldName: "ProductName" } },
@@ -26,7 +30,7 @@ const COLUMNS = [
   },
   {
     label: "Quantity on site",
-    fieldName: "QuantityOnHand",
+    fieldName: Product_Item_Quantity_On_Hand_FIELD.fieldApiName,
     sortable: true
   }
 ];
@@ -47,12 +51,12 @@ export default class WarehouseProductsTable extends LightningElement {
   @wire(getProductItemsInWarehouse, { warehouseId: "$warehouseId" })
   getProductItems({ error, data }) {
     if (data) {
-      this.data = data.map((item) => {
+      this.data = data.map((record) => {
         return {
-          ProductName: item.Product2.Name,
-          ProductUrl: "/" + item.Product2.Id,
-          ProductItemUrl: "/" + item.Id,
-          ...item
+          ProductName: record.Product2.Name,
+          ProductUrl: "/" + record.Product2.Id,
+          ProductItemUrl: "/" + record.Id,
+          ...record
         };
       });
     } else if (error) {
