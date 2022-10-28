@@ -71,4 +71,26 @@ public with sharing class WarehouseController {
       LIMIT 1
     ];
   }
+
+  @AuraEnabled(cacheable=true)
+  public static List<Fulfilment_Request__c> getFulfilmentRequestsByWarehouseId(
+    String warehouseId
+  ) {
+    Id locationId = [
+      SELECT LocationId__c
+      FROM Warehouse__c
+      WHERE Id = :warehouseId
+    ]
+    .LocationId__c;
+
+    List<Fulfilment_Request__c> lstFulfilmentReq = [
+      SELECT Id, Name, Assigned_To__c, Fulfilled__c
+      FROM Fulfilment_Request__c
+      WHERE LocationId__c = :locationId
+      WITH SECURITY_ENFORCED
+      ORDER BY Due_Date__c DESC
+    ];
+
+    return lstFulfilmentReq;
+  }
 }
