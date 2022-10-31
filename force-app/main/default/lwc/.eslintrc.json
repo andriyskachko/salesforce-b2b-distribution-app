@@ -1,5 +1,6 @@
 {
   "extends": ["@salesforce/eslint-config-lwc/recommended"],
+  "ignorePatterns": ["types.d.ts"],
   "overrides": [
     {
       "files": ["*.test.js"],

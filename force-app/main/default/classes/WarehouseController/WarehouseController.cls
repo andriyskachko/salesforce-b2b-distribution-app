@@ -15,14 +15,22 @@ public with sharing class WarehouseController {
   }
 
   @AuraEnabled(cacheable=true)
-  public static List<Warehouse__c> getWarehousesInRegion(String regionId) {
-    return [
+  public static List<WarehouseDTO> getWarehousesInRegion(String regionId) {
+    List<WarehouseDTO> lstWarehouseDTO = new List<WarehouseDTO>();
+    for (Warehouse__c w : [
       SELECT Id, Name
       FROM Warehouse__c
       WHERE RegionId__c = :regionId
       WITH SECURITY_ENFORCED
       ORDER BY NAME
-    ];
+    ]) {
+      WarehouseDTO warehouseDTO = new WarehouseDTO();
+      warehouseDTO.id = w.Id;
+      warehouseDTO.name = w.Name;
+      lstWarehouseDTO.add(warehouseDTO);
+    }
+
+    return lstWarehouseDTO;
   }
 
   @AuraEnabled(cacheable=true)
@@ -72,14 +80,29 @@ public with sharing class WarehouseController {
   }
 
   @AuraEnabled(cacheable=true)
-  public static Warehouse__c getWarehouseInfoById(String warehouseId) {
-    return [
+  public static WarehouseDTO getWarehouseInfoById(String warehouseId) {
+    Warehouse__c warehouse = [
       SELECT Id, Name, LocationId__c, LocationId__r.Name
       FROM Warehouse__c
       WHERE Id = :warehouseId
       WITH SECURITY_ENFORCED
       LIMIT 1
     ];
+
+    if (warehouse == null) {
+      return null;
+    }
+
+    WarehouseDTO warehouseDTO = new WarehouseDTO();
+    warehouseDTO.id = warehouse.Id;
+    warehouseDTO.name = warehouse.Name;
+    warehouseDTO.locationId = warehouse.LocationId__c;
+    warehouseDTO.locationName = warehouse.LocationId__r.Name;
+    warehouseDTO.locationUrl =
+      URL.getCurrentRequestUrl().toExternalForm() +
+      '/' +
+      warehouse.LocationId__c;
+    return warehouseDTO;
   }
 
   @AuraEnabled(cacheable=true)

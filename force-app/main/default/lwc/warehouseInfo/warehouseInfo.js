@@ -1,6 +1,7 @@
 import { LightningElement, wire } from "lwc";
 import {
   MessageContext,
+  APPLICATION_SCOPE,
   subscribe,
   unsubscribe
 } from "lightning/messageService";
@@ -8,8 +9,10 @@ import warehouseSelectedChannel from "@salesforce/messageChannel/WarehouseSelect
 import getWarehouseInfoById from "@salesforce/apex/WarehouseController.getWarehouseInfoById";
 
 export default class WarehouseInfo extends LightningElement {
+  /** @type {string} */
   warehouseId;
-  warehouseInfo;
+  /** @type {WarehouseDTO} */
+  _warehouseInfo;
 
   @wire(MessageContext)
   messageContext;
@@ -17,15 +20,11 @@ export default class WarehouseInfo extends LightningElement {
   @wire(getWarehouseInfoById, { warehouseId: "$warehouseId" })
   wiredGetWarehouseInfo({ error, data }) {
     if (data) {
-      this.warehouseInfo = {
-        locationUrl: "/" + data.LocationId__r.Id,
-        locationName: data.LocationId__r.Name,
-        ...data
-      };
+      this._warehouseInfo = data;
       this.error = undefined;
     } else if (error) {
       this.error = error;
-      this.warehouseInfo = undefined;
+      this._warehouseInfo = undefined;
     }
   }
 
@@ -42,7 +41,8 @@ export default class WarehouseInfo extends LightningElement {
       this.subscription = subscribe(
         this.messageContext,
         warehouseSelectedChannel,
-        (message) => this.handleWarehouseSelected(message)
+        (message) => this.handleWarehouseSelected(message),
+        { scope: APPLICATION_SCOPE }
       );
     }
   }
@@ -55,5 +55,9 @@ export default class WarehouseInfo extends LightningElement {
   handleWarehouseSelected(message) {
     const { warehouseId } = message;
     this.warehouseId = warehouseId;
+  }
+
+  get warehouseInfo() {
+    return this._warehouseInfo;
   }
 }

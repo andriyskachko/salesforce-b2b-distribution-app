@@ -5,22 +5,24 @@ import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getWarehousesInRegion from "@salesforce/apex/WarehouseController.getWarehousesInRegion";
 
 export default class WarehousePicker extends LightningElement {
-  @api region;
+  /** @type {string} */
+  @api regionId;
   value = "";
-  optionsArray = [];
+
+  /** @type {WarehouseDTO[]} */
+  _warehouses;
+
   placeHolder = "Select Region first";
   disabled = true;
 
   @wire(MessageContext)
   messageContext;
 
-  @wire(getWarehousesInRegion, { regionId: "$region" })
+  @wire(getWarehousesInRegion, { regionId: "$regionId" })
   warehouses({ error, data }) {
     if (data) {
-      this.optionsArray = data.map((warehouse) => {
-        return { label: warehouse.Name, value: warehouse.Id };
-      });
-      if (this.optionsArray.length) {
+      this._warehouses = data;
+      if (this._warehouses.length) {
         this.placeHolder = "Select Warehouse";
         this.disabled = false;
       } else {
@@ -56,7 +58,16 @@ export default class WarehousePicker extends LightningElement {
     publish(this.messageContext, warehouseSelected, payload);
   }
 
+  /** @type {Option[]} */
   get options() {
-    return this.optionsArray;
+    if (this._warehouses) {
+      return this._warehouses.map((warehouse) => {
+        return {
+          label: warehouse.name,
+          value: warehouse.id
+        };
+      });
+    }
+    return null;
   }
 }

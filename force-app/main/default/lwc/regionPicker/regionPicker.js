@@ -8,7 +8,7 @@ export default class RegionPicker extends LightningElement {
   /** @type {RegionDTO[]} */
   _regions;
 
-  /** @type {RegionOption[]} */
+  /** @type {Option[]} */
   get options() {
     if (this._regions) {
       return this._regions.map((region) => {
