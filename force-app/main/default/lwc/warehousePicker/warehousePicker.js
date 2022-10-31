@@ -1,4 +1,4 @@
-import { LightningElement, wire, track, api } from "lwc";
+import { LightningElement, wire, api } from "lwc";
 import { publish, MessageContext } from "lightning/messageService";
 import warehouseSelected from "@salesforce/messageChannel/WarehouseSelectedChannel__c";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
@@ -6,10 +6,10 @@ import getWarehousesInRegion from "@salesforce/apex/WarehouseController.getWareh
 
 export default class WarehousePicker extends LightningElement {
   @api region;
-  @track value = "";
-  @track optionsArray = [];
-  @track placeHolder = "Select Region first";
-  @track disabled = true;
+  value = "";
+  optionsArray = [];
+  placeHolder = "Select Region first";
+  disabled = true;
 
   @wire(MessageContext)
   messageContext;

@@ -1,10 +1,10 @@
-import { LightningElement, wire, track } from "lwc";
+import { LightningElement, wire } from "lwc";
 import { ShowToastEvent } from "lightning/platformShowToastEvent";
 import getRegions from "@salesforce/apex/RegionController.getRegions";
 
 export default class RegionPicker extends LightningElement {
-  @track value = "";
-  @track optionsArray = [];
+  value = "";
+  optionsArray = [];
 
   get options() {
     return this.optionsArray;

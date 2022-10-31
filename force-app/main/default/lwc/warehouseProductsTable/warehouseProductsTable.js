@@ -49,7 +49,7 @@ export default class WarehouseProductsTable extends LightningElement {
   messageContext;
 
   @wire(getProductItemsInWarehouse, { warehouseId: "$warehouseId" })
-  getProductItems({ error, data }) {
+  wiredGetProductItems({ error, data }) {
     if (data) {
       this.data = data.map((record) => {
         return {
