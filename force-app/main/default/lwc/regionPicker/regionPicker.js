@@ -4,20 +4,32 @@ import getRegions from "@salesforce/apex/RegionController.getRegions";
 
 export default class RegionPicker extends LightningElement {
   value = "";
-  optionsArray = [];
 
+  /** @type {RegionDTO[]} */
+  _regions;
+
+  /** @type {RegionOption[]} */
   get options() {
-    return this.optionsArray;
+    if (this._regions) {
+      return this._regions.map((region) => {
+        return {
+          label: region.name,
+          value: region.id
+        };
+      });
+    }
+    return null;
   }
 
   @wire(getRegions)
-  regions({ error, data }) {
+  wiredGetRegions({ error, data }) {
     if (data) {
-      this.optionsArray = data.map((region) => {
-        return { label: region.Name, value: region.Id };
-      });
+      this._regions = data;
+      this.error = undefined;
     } else if (error) {
-      this.showErrorToast(error);
+      this._regions = undefined;
+      this.error = error;
+      this.showErrorToast(this.error);
     }
   }
 
