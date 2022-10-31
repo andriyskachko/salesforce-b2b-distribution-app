@@ -1,14 +1,17 @@
 public with sharing class WarehouseController {
-  public static void updateWarehouseLocationId(Id warehouseId, Id locationId) {
+  public static Warehouse__c updateWarehouseLocationId(
+    Id warehouseId,
+    Id locationId
+  ) {
     Warehouse__c warehouse = [
-      SELECT Name, LocationId__c
+      SELECT LocationId__c
       FROM Warehouse__c
       WHERE Id = :warehouseId
       WITH SECURITY_ENFORCED
       LIMIT 1
     ];
     warehouse.LocationId__c = locationId;
-    update warehouse;
+    return warehouse;
   }
 
   @AuraEnabled(cacheable=true)
@@ -26,12 +29,19 @@ public with sharing class WarehouseController {
   public static List<ProductItem> getProductItemsInWarehouse(
     String warehouseId
   ) {
-    Id locationId = [
+    Warehouse__c warehouse = [
       SELECT LocationId__c
       FROM Warehouse__c
       WHERE Id = :warehouseId
-    ]
-    .LocationId__c;
+      WITH SECURITY_ENFORCED
+      LIMIT 1
+    ];
+
+    if (warehouse == null) {
+      return null;
+    }
+
+    Id locationId = warehouse.LocationId__c;
 
     List<ProductItem> lstProductItem = new List<ProductItem>();
 
@@ -92,5 +102,34 @@ public with sharing class WarehouseController {
     ];
 
     return lstFulfilmentReq;
+  }
+
+  public static void insertLocationsForWarehouses(
+    List<Warehouse__c> lstWarehouses
+  ) {
+    Map<Id, Schema.Location> mapWarehouseToLocation = new Map<Id, Schema.Location>();
+    List<Schema.Location> lstLocations = new List<Schema.Location>();
+    List<Warehouse__c> lstUpdatedWarehouses = new List<Warehouse__c>();
+    for (Warehouse__c w : lstWarehouses) {
+      Schema.Location location = new Schema.Location();
+      location.Name = w.Name + ' Location';
+      location.LocationType = 'Warehouse';
+      location.isInventoryLocation = true;
+      lstLocations.add(Location);
+      mapWarehouseToLocation.put(w.Id, location);
+    }
+
+    insert lstLocations;
+
+    for (Id warehouseId : mapWarehouseToLocation.keySet()) {
+      Schema.Location location = mapWarehouseToLocation.get(warehouseId);
+      Warehouse__c updatedWarehouse = WarehouseController.updateWarehouseLocationId(
+        warehouseId,
+        location.Id
+      );
+      lstUpdatedWarehouses.add(updatedWarehouse);
+    }
+
+    update lstUpdatedWarehouses;
   }
 }
