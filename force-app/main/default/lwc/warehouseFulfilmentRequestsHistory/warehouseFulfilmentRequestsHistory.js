@@ -1,4 +1,4 @@
-import { LightningElement, wire, track } from "lwc";
+import { LightningElement, wire } from "lwc";
 import Fulfilment_Request_Name_FIELD from "@salesforce/schema/Fulfilment_Request__c.Name";
 import Fulfilment_Request_Due_Date__c_FIELD from "@salesforce/schema/Fulfilment_Request__c.Due_Date__c";
 import Fulfilment_Request_Assigned_To__c_FIELD from "@salesforce/schema/Fulfilment_Request__c.Assigned_To__c";
@@ -10,6 +10,12 @@ import {
 } from "lightning/messageService";
 import warehouseSelectedChannel from "@salesforce/messageChannel/WarehouseSelectedChannel__c";
 
+const ACTIONS = [
+  { label: "Show details", name: "show_details" },
+  { label: "Mark fulfilled", name: "mark_fulfilled" },
+  { label: "Assign a person", name: "assign_person" }
+];
+
 const COLUMNS = [
   {
     label: "Request Name",
@@ -18,8 +24,7 @@ const COLUMNS = [
     typeAttributes: {
       label: { fieldName: Fulfilment_Request_Name_FIELD.fieldApiName }
     },
-    target: "_blank",
-    sortable: true
+    target: "_blank"
   },
   {
     label: "Assigned To",
@@ -43,6 +48,10 @@ const COLUMNS = [
     fieldName: "RequestFulfilled",
     type: "text",
     sortable: true
+  },
+  {
+    type: "action",
+    typeAttributes: { rowActions: ACTIONS }
   }
 ];
 
@@ -53,7 +62,7 @@ export default class WarehouseFulfilmentRequestsHistory extends LightningElement
   defaultSortDirection = "asc";
   sortDirection = "asc";
   sortedBy;
-  @track data;
+  data;
 
   @wire(getFulfilmentRequestsByWarehouseId, { warehouseId: "$warehouseId" })
   wiredFulfilmentRequestsHistory({ error, data }) {
@@ -123,5 +132,17 @@ export default class WarehouseFulfilmentRequestsHistory extends LightningElement
 
   handleFilter(event) {
     console.log(event.detail);
+  }
+
+  handleRowAction(event) {
+    const action = event.detail.action;
+    const row = event.detail.row;
+    switch (action.name) {
+      case "show_details":
+        console.log("Showing Details: " + JSON.stringify(row));
+        break;
+      default:
+        console.log("hello world");
+    }
   }
 }
