@@ -1,6 +1,8 @@
 interface RegionDTO {
   name: string;
   id: string;
+  regionalManagerId: string;
+  regionalManagerName: string;
 }
 
 interface WarehouseDTO {
@@ -11,4 +13,9 @@ interface WarehouseDTO {
 interface Option {
   value: string;
   label: string;
+}
+
+interface User {
+  name: string;
+  id: string;
 }
