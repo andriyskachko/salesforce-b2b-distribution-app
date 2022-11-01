@@ -1,0 +1,81 @@
+<template>
+  <lightning-card
+    variant="narrow"
+    icon-name="standard:location"
+    title="Region Details"
+  >
+    <lightning-button-icon
+      icon-name="utility:down"
+      variant="border-filled"
+      alternative-text="Show More"
+      slot="actions"
+    ></lightning-button-icon>
+    <div class="slds-card__body slds-card__body_inner">
+      <c-region-picker onchangeregion={handleChangeRegion}></c-region-picker>
+      <div class="slds-p-top_small">
+        <!-- IF REGIONINFO -->
+        <template if:true={regionInfo}>
+          <div class="slds-form flow" role="list">
+            <div class="slds-form__item" role="listitem">
+              <div
+                class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent"
+              >
+                <span class="slds-form-element__label">Region Name</span>
+                <div class="slds-form-element__control">
+                  <div class="slds-form-element__static">
+                    <a href={regionUrl} target="_blank">{regionName}</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="slds-form__item" role="listitem">
+              <div
+                class="slds-form-element slds-form-element_edit slds-form-element_readonly slds-form-element_stacked slds-hint-parent"
+              >
+                <span class="slds-form-element__label">Regional Manager</span>
+                <div class="slds-form-element__control">
+                  <div class="slds-form-element__static">
+                    <a
+                      if:true={regionalManagerName}
+                      href={regionalManagerUrl}
+                      target="_blank"
+                      >{regionalManagerName}</a
+                    >
+                    <lightning-button-icon
+                      icon-name="utility:change_owner"
+                      size="medium"
+                      variant="bare"
+                      title="Change Regional Manager"
+                      alternative-text="Edit: Change Regional Manager"
+                      class="slds-float_right"
+                      onclick={handleChangeRegionalManager}
+                    ></lightning-button-icon>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+        <!-- IF !REGIONINFO -->
+        <template if:false={regionInfo}>
+          <div
+            class="slds-illustration slds-illustration_small"
+            aria-hidden="true"
+          >
+            <img
+              src="/img/chatter/OpenRoad.svg"
+              class="slds-illustration__svg"
+              alt="No region was selected"
+            />
+            <div class="slds-text-color_weak">
+              <h3 class="slds-text-heading_medium">No details to show.</h3>
+              <p class="slds-text-body_regular">
+                Please select a region first.
+              </p>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </lightning-card>
+</template>

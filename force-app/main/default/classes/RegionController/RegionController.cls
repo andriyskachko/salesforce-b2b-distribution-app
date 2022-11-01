@@ -15,4 +15,26 @@ public with sharing class RegionController {
     }
     return lstRegionDTO;
   }
+
+  @AuraEnabled(cacheable=true)
+  public static RegionDTO getRegionById(String regionId) {
+    Region__c region = [
+      SELECT Name, Regional_ManagerId__c, Regional_ManagerId__r.Name
+      FROM Region__c
+      WHERE Id = :regionId
+      WITH SECURITY_ENFORCED
+    ];
+
+    if (region == null) {
+      return null;
+    }
+
+    RegionDTO regionDTO = new RegionDTO();
+    regionDTO.id = regionId;
+    regionDTO.name = region.Name;
+    regionDTO.regionalManagerId = region.Regional_ManagerId__c;
+    regionDTO.regionalManagerName = region.Regional_ManagerId__r.Name;
+
+    return regionDTO;
+  }
 }
