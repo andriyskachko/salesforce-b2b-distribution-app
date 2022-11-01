@@ -1,0 +1,27 @@
+<template>
+  <lightning-modal-header
+    label="Assign new Regional Manager"
+  ></lightning-modal-header>
+  <lightning-modal-body>
+    <lightning-input
+      type="text"
+      value={searchValue}
+      label="User Name"
+      onchange={handleChange}
+    ></lightning-input>
+    <template if:true={users}>
+      <template for:each={users} for:item="user">
+        <p key={user.id}>{user.name}</p>
+      </template>
+    </template>
+    <lightning-input type="checkbox" checked></lightning-input
+    ><span>Send notification email</span>
+  </lightning-modal-body>
+  <lightning-modal-footer>
+    <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+    <lightning-button
+      label="Assign Regional Manager"
+      onclick={handleAssignRegionalManager}
+    ></lightning-button>
+  </lightning-modal-footer>
+</template>
