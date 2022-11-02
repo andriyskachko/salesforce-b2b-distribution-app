@@ -1,9 +1,11 @@
-import { LightningElement, wire } from "lwc";
-import { ShowToastEvent } from "lightning/platformShowToastEvent";
-import getRegions from "@salesforce/apex/RegionController.getRegions";
+import { LightningElement, wire } from 'lwc';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import regionSelected from '@salesforce/messageChannel/RegionSelectedChannel__c';
+import getRegions from '@salesforce/apex/RegionController.getRegions';
+import { publish, MessageContext } from 'lightning/messageService';
 
 export default class RegionPicker extends LightningElement {
-  value = "";
+  value = '';
 
   /** @type {RegionDTO[]} */
   _regions;
@@ -33,19 +35,25 @@ export default class RegionPicker extends LightningElement {
     }
   }
 
+  @wire(MessageContext)
+  messageContext;
+
   showErrorToast(error) {
     const event = new ShowToastEvent({
-      title: "Unexpected Error Occured",
+      title: 'Unexpected Error Occured',
       message: error.body.message
     });
     this.dispatchEvent(event);
   }
 
+  publishPayload() {
+    const payload = { regionId: this.value };
+    publish(this.messageContext, regionSelected, payload);
+  }
+
   handleChange(event) {
     this.value = event.detail.value;
-    const changeEvent = new CustomEvent("changeregion", {
-      detail: this.value
-    });
-    this.dispatchEvent(changeEvent);
+    this.publishPayload();
+    this.dispatchEvent(new CustomEvent('changeregion', { detail: this.value }));
   }
 }

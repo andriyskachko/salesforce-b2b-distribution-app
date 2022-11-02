@@ -1,7 +1,7 @@
-import { LightningElement, wire } from "lwc";
-import getRegionById from "@salesforce/apex/RegionController.getRegionById";
-import ChangeRegionalManagerModal from "c/changeRegionalManagerModal";
-import "./regionInfo.css";
+import { LightningElement, wire } from 'lwc';
+import getRegionById from '@salesforce/apex/RegionController.getRegionById';
+import ChangeRegionalManagerModal from 'c/changeRegionalManagerModal';
+import './regionInfo.css';
 
 export default class RegionInfo extends LightningElement {
   /** @type {string} */
@@ -10,7 +10,7 @@ export default class RegionInfo extends LightningElement {
   /** @type {RegionDTO} */
   _regionInfo;
 
-  @wire(getRegionById, { regionId: "$regionId" })
+  @wire(getRegionById, { regionId: '$regionId' })
   wiredGetRegionById({ error, data }) {
     if (data) {
       this._regionInfo = { ...data };
@@ -30,7 +30,7 @@ export default class RegionInfo extends LightningElement {
   }
 
   get regionUrl() {
-    return "/" + this._regionInfo.id;
+    return '/' + this._regionInfo.id;
   }
 
   get regionalManagerName() {
@@ -38,7 +38,7 @@ export default class RegionInfo extends LightningElement {
   }
 
   get regionalManagerUrl() {
-    return "/" + this._regionInfo.regionalManagerId;
+    return '/' + this._regionInfo.regionalManagerId;
   }
 
   handleChangeRegion(event) {
@@ -47,7 +47,7 @@ export default class RegionInfo extends LightningElement {
 
   async handleChangeRegionalManager() {
     const result = await ChangeRegionalManagerModal.open({
-      size: "medium",
+      size: 'medium',
       description: "Accessible description of modal's purpose",
       regionId: this.regionId
     });
