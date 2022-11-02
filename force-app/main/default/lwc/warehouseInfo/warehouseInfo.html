@@ -1,18 +1,46 @@
 <template>
-  <lightning-card class="slds-m-top_medium slds-m-bottom_x-large">
-    <div if:true={warehouseInfo} class="slds-p-around_medium lgc-bg">
-      <lightning-tile
-        label="Manage Location"
-        type="media"
-        href={warehouseInfo.locationUrl}
-      >
-        <lightning-icon
-          slot="media"
-          icon-name="standard:address"
-        ></lightning-icon>
-        <p title="Record Link">{warehouseInfo.locationName}</p>
-      </lightning-tile>
+  <lightning-card
+    variant="narrow"
+    icon-name="standard:instore_locations"
+    title="Warehouse Details"
+  >
+    <lightning-button-icon
+      icon-name="utility:down"
+      variant="border-filled"
+      alternative-text="Show More"
+      slot="actions"
+    ></lightning-button-icon>
+    <div class="slds-card__body slds-card__body_inner">
+      <c-warehouse-picker></c-warehouse-picker>
+      <div class="slds-p-top_small">
+        <template if:true={warehouseId}>
+          <lightning-record-form
+            if:true={warehouseId}
+            record-id={warehouseId}
+            object-api-name={objectApiName}
+            fields={fields}
+            mode="view"
+          ></lightning-record-form>
+        </template>
+        <template if:false={warehouseId}>
+          <div
+            class="slds-illustration slds-illustration_small"
+            aria-hidden="true"
+          >
+            <img
+              src="/img/chatter/Desert.svg"
+              class="slds-illustration__svg"
+              alt="No region was selected"
+            />
+            <div class="slds-text-color_weak">
+              <h3 class="slds-text-heading_medium">No details to show.</h3>
+              <p class="slds-text-body_regular">
+                Please select a Warehouse first.
+              </p>
+            </div>
+          </div>
+        </template>
+      </div>
     </div>
-    <h1 if:false={warehouseInfo}>Select Warehouse First</h1>
   </lightning-card>
 </template>

@@ -1,32 +1,29 @@
-import { LightningElement, wire } from "lwc";
+import { LightningElement, wire } from 'lwc';
 import {
   MessageContext,
   APPLICATION_SCOPE,
   subscribe,
   unsubscribe
-} from "lightning/messageService";
-import warehouseSelectedChannel from "@salesforce/messageChannel/WarehouseSelectedChannel__c";
-import getWarehouseInfoById from "@salesforce/apex/WarehouseController.getWarehouseInfoById";
+} from 'lightning/messageService';
+import warehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
+import WAREHOUSE_OBJECT from '@salesforce/schema/Warehouse__c';
+import WAREHOUSE_NAME_FIELD from '@salesforce/schema/Warehouse__c.Name';
+import WAREHOUSE_LOCATION_ID_FIELD from '@salesforce/schema/Warehouse__c.LocationId__c';
+
+const FIELDS = [
+  WAREHOUSE_NAME_FIELD.fieldApiName,
+  WAREHOUSE_LOCATION_ID_FIELD.fieldApiName
+];
 
 export default class WarehouseInfo extends LightningElement {
+  fields = FIELDS;
+  objectApiName = WAREHOUSE_OBJECT.objectApiName;
+
   /** @type {string} */
   warehouseId;
-  /** @type {WarehouseDTO} */
-  _warehouseInfo;
 
   @wire(MessageContext)
   messageContext;
-
-  @wire(getWarehouseInfoById, { warehouseId: "$warehouseId" })
-  wiredGetWarehouseInfo({ error, data }) {
-    if (data) {
-      this._warehouseInfo = data;
-      this.error = undefined;
-    } else if (error) {
-      this.error = error;
-      this._warehouseInfo = undefined;
-    }
-  }
 
   connectedCallback() {
     this.subscribeToMessageChannel();
@@ -55,6 +52,9 @@ export default class WarehouseInfo extends LightningElement {
   handleWarehouseSelected(message) {
     const { warehouseId } = message;
     this.warehouseId = warehouseId;
+    console.log('Selected Warehouse ID: ' + this.warehouseId);
+    console.log(this.objectApiName);
+    this.fields.forEach((field) => console.log(field));
   }
 
   get warehouseInfo() {
