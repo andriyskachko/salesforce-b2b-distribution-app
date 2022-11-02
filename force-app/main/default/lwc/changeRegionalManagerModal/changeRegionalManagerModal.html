@@ -3,17 +3,16 @@
     label="Assign new Regional Manager"
   ></lightning-modal-header>
   <lightning-modal-body>
-    <lightning-input
-      type="text"
-      value={searchValue}
-      label="User Name"
-      onchange={handleChange}
-    ></lightning-input>
-    <template if:true={users}>
-      <template for:each={users} for:item="user">
-        <p key={user.id}>{user.name}</p>
-      </template>
-    </template>
+    <lightning-record-edit-form
+      object-api-name={objectApiName}
+      record-id={regionId}
+    >
+      <lightning-input-field
+        field-name={regionalManagerField}
+        onchange={handleUserSelected}
+        required
+      ></lightning-input-field>
+    </lightning-record-edit-form>
     <lightning-input type="checkbox" checked></lightning-input
     ><span>Send notification email</span>
   </lightning-modal-body>

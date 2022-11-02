@@ -47,12 +47,10 @@ export default class RegionInfo extends LightningElement {
 
   async handleChangeRegionalManager() {
     const result = await ChangeRegionalManagerModal.open({
-      size: "small",
+      size: "medium",
       description: "Accessible description of modal's purpose",
-      content: "Passed into content api"
+      regionId: this.regionId
     });
-    // if modal closed with X button, promise returns result = 'undefined'
-    // if modal closed with OK button, promise returns result = 'okay'
     console.log(result);
   }
 }

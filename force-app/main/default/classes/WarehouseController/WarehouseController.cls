@@ -98,10 +98,7 @@ public with sharing class WarehouseController {
     warehouseDTO.name = warehouse.Name;
     warehouseDTO.locationId = warehouse.LocationId__c;
     warehouseDTO.locationName = warehouse.LocationId__r.Name;
-    warehouseDTO.locationUrl =
-      URL.getCurrentRequestUrl().toExternalForm() +
-      '/' +
-      warehouse.LocationId__c;
+    warehouseDTO.locationUrl = '/' + warehouse.LocationId__c; // Ask mentor how to get absolute url for the record
     return warehouseDTO;
   }
 

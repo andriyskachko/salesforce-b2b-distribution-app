@@ -1,33 +1,20 @@
-import { api, wire } from "lwc";
 import LightningModal from "lightning/modal";
-import getUsersBySearchKey from "@salesforce/apex/UserController.getUsersBySearchKey";
+import { api } from "lwc";
+import REGIONAL_MANAGER_FIELD from "@salesforce/schema/Region__c.Regional_ManagerId__c";
 
 export default class ChangeRegionalManagerModal extends LightningModal {
-  /** @type {User[]} */
-  _users;
+  /** @type {string} */
+  @api regionId;
 
-  @api content = "";
-
-  searchKey = "";
+  regionalManagerField = REGIONAL_MANAGER_FIELD.fieldApiName;
+  obejctApiName = REGIONAL_MANAGER_FIELD.objectApiName;
 
   /** @type {User} */
-  @api selectedUser;
+  selectedUser;
 
-  @wire(getUsersBySearchKey, { searchKey: "$searchKey" })
-  wiredGetUsersBySearchKey({ error, data }) {
-    if (data) {
-      this._users = data;
-      this.error = undefined;
-      console.log(this._users);
-    } else if (error) {
-      this._users = undefined;
-      this.error = error;
-      console.log(error);
-    }
-  }
-
-  get users() {
-    return this._users;
+  handleUserSelected(event) {
+    this.selectedUser = event.target.value;
+    console.log("the selected User id is" + this.selectedUser.id);
   }
 
   handleAssignRegionalManager() {
@@ -36,10 +23,8 @@ export default class ChangeRegionalManagerModal extends LightningModal {
 
   handleCancel() {
     this.close("canceled");
-  }
-
-  handleChange(event) {
-    console.log(event.detail);
-    this.searchValue = event.detail;
+    console.log(this.regionId);
+    console.log(this.obejctApiName);
+    console.log(this.regionalManagerField);
   }
 }

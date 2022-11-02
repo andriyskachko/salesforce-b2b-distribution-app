@@ -1,7 +1,12 @@
 public with sharing class UserController {
   @AuraEnabled(cacheable=true)
   public static List<UserDTO> getUsersBySearchKey(String searchKey) {
+    if (searchKey == '') {
+      return null;
+    }
+
     String searchKeyword = '%' + searchKey + '%';
+
     List<UserDTO> lstUsers = new List<UserDTO>();
 
     for (User u : [
