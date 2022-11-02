@@ -18,6 +18,7 @@ const FIELDS = [
 export default class WarehouseInfo extends LightningElement {
   fields = FIELDS;
   objectApiName = WAREHOUSE_OBJECT.objectApiName;
+  warehouseSelectedSubscription;
 
   /** @type {string} */
   warehouseId;
@@ -26,16 +27,16 @@ export default class WarehouseInfo extends LightningElement {
   messageContext;
 
   connectedCallback() {
-    this.subscribeToMessageChannel();
+    this.subscribeToWarehouseSelectedMessageChannel();
   }
 
   disconnectedCallback() {
-    this.unsubscribeMessageChannel();
+    this.unsubscribeWarehouseSelectedMessageChannel();
   }
 
-  subscribeToMessageChannel() {
-    if (!this.subscription) {
-      this.subscription = subscribe(
+  subscribeToWarehouseSelectedMessageChannel() {
+    if (!this.warehouseSelectedSubscription) {
+      this.warehouseSelectedSubscription = subscribe(
         this.messageContext,
         warehouseSelectedChannel,
         (message) => this.handleWarehouseSelected(message),
@@ -44,20 +45,14 @@ export default class WarehouseInfo extends LightningElement {
     }
   }
 
-  unsubscribeMessageChannel() {
-    unsubscribe(this.subscription);
-    this.subscription = null;
+  unsubscribeWarehouseSelectedMessageChannel() {
+    unsubscribe(this.warehouseSelectedSubscription);
+    this.warehouseSelectedSubscription = null;
   }
 
+  /** @param {WarehousePayload} message  */
   handleWarehouseSelected(message) {
     const { warehouseId } = message;
     this.warehouseId = warehouseId;
-    console.log('Selected Warehouse ID: ' + this.warehouseId);
-    console.log(this.objectApiName);
-    this.fields.forEach((field) => console.log(field));
-  }
-
-  get warehouseInfo() {
-    return this._warehouseInfo;
   }
 }

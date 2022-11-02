@@ -19,3 +19,11 @@ interface User {
   name: string;
   id: string;
 }
+
+interface WarehousePayload {
+  warehouseId: string;
+}
+
+interface RegionPayload {
+  regionId: string;
+}

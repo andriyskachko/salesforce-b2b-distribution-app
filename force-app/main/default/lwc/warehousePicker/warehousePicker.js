@@ -6,10 +6,8 @@ import {
   unsubscribe,
   APPLICATION_SCOPE
 } from 'lightning/messageService';
-
-import warehouseSelected from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
-import regionSelected from '@salesforce/messageChannel/RegionSelectedChannel__c';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import warehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
+import regionSelectedChannel from '@salesforce/messageChannel/RegionSelectedChannel__c';
 import getWarehousesInRegion from '@salesforce/apex/WarehouseController.getWarehousesInRegion';
 
 export default class WarehousePicker extends LightningElement {
@@ -39,8 +37,10 @@ export default class WarehousePicker extends LightningElement {
         this.placeHolder = 'No Warehouses in the Region';
         this.disabled = true;
       }
+      this.error = undefined;
     } else if (error) {
-      this.showErrorToast(error);
+      this._warehouses = undefined;
+      this.error = error;
     }
   }
 
@@ -56,7 +56,7 @@ export default class WarehousePicker extends LightningElement {
     if (!this.regionSelectedSubscription) {
       this.regionSelectedSubscription = subscribe(
         this.messageContext,
-        regionSelected,
+        regionSelectedChannel,
         (message) => this.handleRegionSelected(message),
         { scope: APPLICATION_SCOPE }
       );
@@ -68,18 +68,11 @@ export default class WarehousePicker extends LightningElement {
     this.regionSelectedSubscription = null;
   }
 
+  /** @param {RegionPayload} message */
   handleRegionSelected(message) {
     const { regionId } = message;
     this.regionId = regionId;
     this.resetWarehouse();
-  }
-
-  showErrorToast(error) {
-    const event = new ShowToastEvent({
-      title: 'Unexpected Error Occured',
-      message: error.body.message
-    });
-    this.dispatchEvent(event);
   }
 
   handleChange(event) {
@@ -94,7 +87,7 @@ export default class WarehousePicker extends LightningElement {
 
   publishPayload() {
     const payload = { warehouseId: this.value };
-    publish(this.messageContext, warehouseSelected, payload);
+    publish(this.messageContext, warehouseSelectedChannel, payload);
   }
 
   /** @type {Option[]} */
