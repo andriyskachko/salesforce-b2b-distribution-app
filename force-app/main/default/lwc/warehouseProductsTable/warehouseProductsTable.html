@@ -1,17 +1,75 @@
 <template>
-  <lightning-card>
-    <lightning-datatable
-      if:true={warehouseId}
-      key-field="id"
-      hide-checkbox-column
-      default-sort-direction={defaultSortDirection}
-      sorted-direction={sortDirection}
-      sorted-by={sortedBy}
-      onsort={handleSort}
-      data={data}
-      columns={columns}
-    >
-    </lightning-datatable>
-    <h1 if:false={warehouseId}>Select Warehouse First!</h1>
+  <lightning-card
+    variant="base"
+    icon-name="standard:product_item"
+    title="Product Items"
+  >
+    <div slot="actions" if:true={warehouseIsSelected}>
+      <lightning-button
+        label="New"
+        onclick={handleAddProductItem}
+        variant="neutral"
+      ></lightning-button>
+    </div>
+    <div>
+      <lightning-input
+        if:true={warehouseIsSelected}
+        type="search"
+        label="Search Product Items"
+        onchange={handleSearch}
+      ></lightning-input>
+      <lightning-datatable
+        if:true={warehouseIsNotEmpty}
+        key-field="id"
+        hide-checkbox-column
+        default-sort-direction={defaultSortDirection}
+        sorted-direction={sortDirection}
+        sorted-by={sortedBy}
+        onsort={handleSort}
+        data={data}
+        columns={columns}
+      >
+      </lightning-datatable>
+    </div>
+    <lightning-button
+      slot="footer"
+      if:true={warehouseIsSelected}
+      variant="base"
+      label="View All"
+      title="View All"
+      onclick={handleViewAll}
+    ></lightning-button>
+    <!-- <div
+        if:false={warehouseIsSelected}
+        class="slds-illustration slds-illustration_small"
+        aria-hidden="true"
+      >
+        <img
+          src="/img/chatter/OpenRoad.svg"
+          class="slds-illustration__svg"
+          alt="No warehouse was selected"
+        />
+        <div class="slds-text-color_weak">
+          <h3 class="slds-text-heading_medium">No products to show.</h3>
+          <p class="slds-text-body_regular">Please select a Warehouse first.</p>
+        </div>
+      </div> -->
+    <!-- <div
+        if:false={warehouseIsNotEmpty}
+        class="slds-illustration slds-illustration_small"
+        aria-hidden="true"
+      >
+        <img
+          src="/img/chatter/Desert.svg"
+          class="slds-illustration__svg"
+          alt="Warehouse is empty."
+        />
+        <div class="slds-text-color_weak">
+          <h3 class="slds-text-heading_medium">
+            No product items on the Warehouse.
+          </h3>
+        </div>
+      </div>
+    </div> -->
   </lightning-card>
 </template>
