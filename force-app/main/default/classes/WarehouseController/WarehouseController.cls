@@ -34,52 +34,6 @@ public with sharing class WarehouseController {
   }
 
   @AuraEnabled(cacheable=true)
-  public static List<ProductItem> getProductItemsInWarehouse(
-    String warehouseId
-  ) {
-    Warehouse__c warehouse = [
-      SELECT LocationId__c
-      FROM Warehouse__c
-      WHERE Id = :warehouseId
-      WITH SECURITY_ENFORCED
-      LIMIT 1
-    ];
-
-    if (warehouse == null) {
-      return null;
-    }
-
-    Id locationId = warehouse.LocationId__c;
-
-    List<ProductItem> lstProductItem = new List<ProductItem>();
-
-    Schema.Location location = [
-      SELECT
-        Id,
-        (
-          SELECT
-            Product2.Id,
-            Product2.Name,
-            ProductItemNumber,
-            QuantityOnHand,
-            SerialNumber
-          FROM ProductItems
-        )
-      FROM Location
-      WHERE Id = :locationId
-      WITH SECURITY_ENFORCED
-    ];
-
-    if (!location.ProductItems.isEmpty()) {
-      for (ProductItem p : location.ProductItems) {
-        lstProductItem.add(p);
-      }
-    }
-
-    return lstProductItem;
-  }
-
-  @AuraEnabled(cacheable=true)
   public static WarehouseDTO getWarehouseInfoById(String warehouseId) {
     Warehouse__c warehouse = [
       SELECT Id, Name, LocationId__c, LocationId__r.Name
@@ -151,5 +105,60 @@ public with sharing class WarehouseController {
     }
 
     update lstUpdatedWarehouses;
+  }
+
+  @AuraEnabled(cacheable=true)
+  public static List<ProductItemDTO> getProductItemsInWarehouse(
+    String warehouseId
+  ) {
+    List<Warehouse__c> warehouses = [
+      SELECT LocationId__c
+      FROM Warehouse__c
+      WHERE Id = :warehouseId
+      WITH SECURITY_ENFORCED
+    ];
+
+    if (warehouses.size() == 0) {
+      return null;
+    }
+
+    Id locationId = warehouses[0].LocationId__c;
+
+    List<ProductItemDTO> lstProductItemDTO = new List<ProductItemDTO>();
+
+    Schema.Location location = [
+      SELECT
+        Id,
+        (
+          SELECT
+            Id,
+            Product2.Id,
+            Product2.Name,
+            ProductItemNumber,
+            QuantityOnHand,
+            SerialNumber
+          FROM ProductItems
+        )
+      FROM Location
+      WHERE Id = :locationId
+      WITH SECURITY_ENFORCED
+    ];
+
+    if (!location.ProductItems.isEmpty()) {
+      for (ProductItem p : location.ProductItems) {
+        ProductItemDTO productItem = new ProductItemDTO();
+        productItem.productId = p.Product2.Id;
+        productItem.productItemId = p.Id;
+        productItem.productItemNumber = p.ProductItemNumber;
+        productItem.productItemQuantity = p.QuantityOnHand;
+        productItem.productItemSerialNumber = p.SerialNumber;
+        productItem.productName = p.Product2.Name;
+        productItem.productUrl = '/' + productItem.productId;
+        productItem.productItemUrl = '/' + productItem.productItemId;
+        lstProductItemDTO.add(productItem);
+      }
+    }
+
+    return lstProductItemDTO;
   }
 }
