@@ -7,13 +7,9 @@ import {
 } from 'lightning/messageService';
 import warehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
 import WAREHOUSE_OBJECT from '@salesforce/schema/Warehouse__c';
-import WAREHOUSE_NAME_FIELD from '@salesforce/schema/Warehouse__c.Name';
 import WAREHOUSE_LOCATION_ID_FIELD from '@salesforce/schema/Warehouse__c.LocationId__c';
 
-const FIELDS = [
-  WAREHOUSE_NAME_FIELD.fieldApiName,
-  WAREHOUSE_LOCATION_ID_FIELD.fieldApiName
-];
+const FIELDS = [WAREHOUSE_LOCATION_ID_FIELD.fieldApiName];
 
 export default class WarehouseInfo extends LightningElement {
   fields = FIELDS;
