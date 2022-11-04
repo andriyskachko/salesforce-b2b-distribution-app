@@ -6,6 +6,7 @@ import {
   subscribe,
   unsubscribe
 } from 'lightning/messageService';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import warehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
 import CreateNewRecordModal from 'c/createNewRecordModal';
 import PRODUCT_ITEM_OBJECT from '@salesforce/schema/ProductItem';
@@ -63,7 +64,7 @@ export default class WarehouseProductsTable extends LightningElement {
   objectApiName = OBJECT_API_NAME;
 
   /** @type {ProductItemDTO[]} */
-  _data;
+  _data = [];
 
   /** @type {ProductItemDTO[]} */
   _filteredData;
@@ -139,7 +140,15 @@ export default class WarehouseProductsTable extends LightningElement {
       objectApiName: this.objectApiName,
       fields: this.fields
     });
-    console.log(result);
+
+    if (result) {
+      const evt = new ShowToastEvent({
+        title: 'Successfully created a record',
+        message: 'Record ID: ' + result,
+        variant: 'success'
+      });
+      this.dispatchEvent(evt);
+    }
   }
 
   sortData(fieldName, direction) {
@@ -154,12 +163,8 @@ export default class WarehouseProductsTable extends LightningElement {
     this._data = parsedData;
   }
 
-  get warehouseIsNotEmpty() {
-    return this.warehouseId && this.data;
-  }
-
-  get warehouseIsSelected() {
-    return !!this.warehouseId;
+  get warehouseIsEmpty() {
+    return this.warehouseId && this._data.length === 0;
   }
 
   get data() {
