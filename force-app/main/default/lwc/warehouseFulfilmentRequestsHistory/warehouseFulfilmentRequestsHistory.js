@@ -1,82 +1,28 @@
-import { LightningElement, wire } from "lwc";
-import Fulfilment_Request_Name_FIELD from "@salesforce/schema/Fulfilment_Request__c.Name";
-import Fulfilment_Request_Due_Date__c_FIELD from "@salesforce/schema/Fulfilment_Request__c.Due_Date__c";
-import Fulfilment_Request_Assigned_To__c_FIELD from "@salesforce/schema/Fulfilment_Request__c.Assigned_To__c";
-import getFulfilmentRequestsByWarehouseId from "@salesforce/apex/WarehouseController.getFulfilmentRequestsByWarehouseId";
+import { LightningElement, wire } from 'lwc';
+import getFulfilmentRequestsByWarehouseId from '@salesforce/apex/WarehouseController.getFulfilmentRequestsByWarehouseId';
 import {
+  APPLICATION_SCOPE,
   MessageContext,
   subscribe,
   unsubscribe
-} from "lightning/messageService";
-import warehouseSelectedChannel from "@salesforce/messageChannel/WarehouseSelectedChannel__c";
-
-const ACTIONS = [
-  { label: "Show details", name: "show_details" },
-  { label: "Mark fulfilled", name: "mark_fulfilled" },
-  { label: "Assign a person", name: "assign_person" }
-];
-
-const COLUMNS = [
-  {
-    label: "Request Name",
-    fieldName: "RequestUrl",
-    type: "url",
-    typeAttributes: {
-      label: { fieldName: Fulfilment_Request_Name_FIELD.fieldApiName }
-    },
-    target: "_blank"
-  },
-  {
-    label: "Assigned To",
-    fieldName: Fulfilment_Request_Assigned_To__c_FIELD.fieldApiName,
-    type: "text",
-    sortable: true
-  },
-  {
-    label: "Due Date",
-    fieldName: Fulfilment_Request_Due_Date__c_FIELD.fieldApiName,
-    type: "date",
-    typeAttributes: {
-      day: "numeric",
-      month: "short",
-      year: "numeric"
-    },
-    sortable: true
-  },
-  {
-    label: "Fulfilled",
-    fieldName: "RequestFulfilled",
-    type: "text",
-    sortable: true
-  },
-  {
-    type: "action",
-    typeAttributes: { rowActions: ACTIONS }
-  }
-];
+} from 'lightning/messageService';
+import warehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
 
 export default class WarehouseFulfilmentRequestsHistory extends LightningElement {
+  /** @type {string} */
   warehouseId;
-  columns = COLUMNS;
   subscription;
-  defaultSortDirection = "asc";
-  sortDirection = "asc";
-  sortedBy;
-  data;
+  /** @type {FulfilmentRequestDTO[]} */
+  _requests = [];
 
-  @wire(getFulfilmentRequestsByWarehouseId, { warehouseId: "$warehouseId" })
-  wiredFulfilmentRequestsHistory({ error, data }) {
+  @wire(getFulfilmentRequestsByWarehouseId, { warehouseId: '$warehouseId' })
+  wiredRequests({ error, data }) {
     if (data) {
-      this.data = data.map((record) => {
-        return {
-          RequestUrl: "/" + record.Id,
-          RequestFulfilled: record.Fulfilled__c ? "Yes" : "No",
-          ...record
-        };
-      });
+      this._requests = data;
       this.error = undefined;
+      console.log(this._requests);
     } else if (error) {
-      this.data = undefined;
+      this._requests = [];
       this.error = error;
     }
   }
@@ -97,7 +43,8 @@ export default class WarehouseFulfilmentRequestsHistory extends LightningElement
       this.subscription = subscribe(
         this.messageContext,
         warehouseSelectedChannel,
-        (message) => this.handleWarehouseSelected(message)
+        (message) => this.handleWarehouseSelected(message),
+        { scope: APPLICATION_SCOPE }
       );
     }
   }
@@ -112,37 +59,31 @@ export default class WarehouseFulfilmentRequestsHistory extends LightningElement
     this.warehouseId = warehouseId;
   }
 
-  handleSort(event) {
-    this.sortedBy = event.detail.fieldName;
-    this.sortDirection = event.detail.sortDirection;
-    this.sortData(this.sortedBy, this.sortDirection);
+  handleViewAll() {
+    console.log('handled view all');
   }
 
-  sortData(fieldName, direction) {
-    const parsedData = JSON.parse(JSON.stringify(this.data));
-    const key = (a) => a[fieldName];
-    const isReverse = direction === "asc" ? 1 : -1;
-    parsedData.sort((a, b) => {
-      a = key(a) ? key(a) : "";
-      b = key(b) ? key(b) : "";
-      return isReverse * ((a > b) - (b > a));
-    });
-    this.data = parsedData;
+  handleAddRequest() {
+    console.log('handled add request');
   }
 
-  handleFilter(event) {
-    console.log(event.detail);
+  /** @type {FulfilmentRequestDTO} */
+  get latestFulfilmentRequest() {
+    return this._requests[0];
   }
 
-  handleRowAction(event) {
-    const action = event.detail.action;
-    const row = event.detail.row;
-    switch (action.name) {
-      case "show_details":
-        console.log("Showing Details: " + JSON.stringify(row));
-        break;
-      default:
-        console.log("hello world");
-    }
+  /** @type {Number} */
+  get requestsCount() {
+    return this._requests.length;
+  }
+
+  /** @type {string} */
+  get cardTitle() {
+    return 'Fulfilment Requests' + this.cardTitleCount;
+  }
+
+  /** @type {string} */
+  get cardTitleCount() {
+    return this.warehouseId ? ` (${this.requestsCount})` : '';
   }
 }

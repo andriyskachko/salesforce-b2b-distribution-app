@@ -55,3 +55,15 @@ interface TypeAttributes {
 interface Label {
   fieldName: string;
 }
+
+interface FulfilmentRequestDTO {
+  requestId: string;
+  requestUrl: string;
+  requestName: string;
+  assignedTo: string;
+  assignedToUrl: string;
+  fulfilled: 'Yes' | 'No';
+  dueDate: Date;
+  createdAt: Date;
+  status: 'New' | 'In Process' | 'Completed';
+}
