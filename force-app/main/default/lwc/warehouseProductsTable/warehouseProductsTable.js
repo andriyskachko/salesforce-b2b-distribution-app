@@ -1,5 +1,6 @@
 import { LightningElement, wire } from 'lwc';
 import getProductItemsInWarehouse from '@salesforce/apex/WarehouseController.getProductItemsInWarehouse';
+import getWarehouseLocationId from '@salesforce/apex/WarehouseController.getWarehouseLocationId';
 import {
   APPLICATION_SCOPE,
   MessageContext,
@@ -16,11 +17,8 @@ import QUANTITY_ON_HAND_FIELD from '@salesforce/schema/ProductItem.QuantityOnHan
 import QUANTITY_UNIT_OF_MEASURE_FIELD from '@salesforce/schema/ProductItem.QuantityUnitOfMeasure.';
 import SERIAL_NUMBER_FIELD from '@salesforce/schema/ProductItem.SerialNumber';
 
-const OBJECT_API_NAME = PRODUCT_ITEM_OBJECT;
-
 const FIELDS = [
   PRODUCT_NAME_FIELD,
-  LOCATION_FIELD,
   SERIAL_NUMBER_FIELD,
   QUANTITY_ON_HAND_FIELD,
   QUANTITY_UNIT_OF_MEASURE_FIELD
@@ -55,13 +53,13 @@ const COLUMNS = [
 export default class WarehouseProductsTable extends LightningElement {
   searchString = '';
   columns = COLUMNS;
-  warehouseId;
+  warehouseId = '';
   defaultSortDirection = 'asc';
   sortDirection = 'asc';
-  sortedBy;
+  sortedBy = '';
   subscription;
   fields = FIELDS;
-  objectApiName = OBJECT_API_NAME;
+  objectApiName = PRODUCT_ITEM_OBJECT;
 
   /** @type {ProductItemDTO[]} */
   _data = [];
@@ -83,6 +81,9 @@ export default class WarehouseProductsTable extends LightningElement {
       this.error = error;
     }
   }
+
+  @wire(getWarehouseLocationId, { warehouseId: '$warehouseId' })
+  _locationId;
 
   connectedCallback() {
     this.subscribeToMessageChannel();
@@ -138,7 +139,14 @@ export default class WarehouseProductsTable extends LightningElement {
       description: "Accessible description of modal's purpose",
       objectName: 'Product Item',
       objectApiName: this.objectApiName,
-      fields: this.fields
+      fields: this.fields,
+      /** @type {Prop[]} */
+      props: [
+        {
+          fieldName: LOCATION_FIELD.fieldApiName,
+          value: this.locationId
+        }
+      ]
     });
 
     if (result) {
@@ -169,5 +177,9 @@ export default class WarehouseProductsTable extends LightningElement {
 
   get data() {
     return this._filteredData;
+  }
+
+  get locationId() {
+    return this._locationId ? this._locationId.data : '';
   }
 }
