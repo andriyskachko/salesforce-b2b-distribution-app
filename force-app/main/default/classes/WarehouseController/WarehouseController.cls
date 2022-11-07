@@ -52,7 +52,10 @@ public with sharing class WarehouseController {
     warehouseDTO.name = warehouse.Name;
     warehouseDTO.locationId = warehouse.LocationId__c;
     warehouseDTO.locationName = warehouse.LocationId__r.Name;
-    warehouseDTO.locationUrl = '/' + warehouse.LocationId__c; // Ask mentor how to get absolute url for the record
+    warehouseDTO.locationUrl =
+      URL.getSalesforceBaseUrl() +
+      '/' +
+      warehouse.LocationId__c;
     return warehouseDTO;
   }
 
@@ -86,8 +89,11 @@ public with sharing class WarehouseController {
       FulfilmentRequestDTO fulfilmentReqDTO = new FulfilmentRequestDTO();
       fulfilmentReqDTO.requestId = f.Id;
       fulfilmentReqDTO.requestName = f.Name;
-      fulfilmentReqDTO.requestUrl = '/' + f.Id;
-      fulfilmentReqDTO.assignedToUrl = '/' + f.Assigned_To__c;
+      fulfilmentReqDTO.requestUrl = URL.getSalesforceBaseUrl() + '/' + f.Id;
+      fulfilmentReqDTO.assignedToUrl =
+        URL.getSalesforceBaseUrl() +
+        '/' +
+        f.Assigned_To__c;
       fulfilmentReqDTO.assignedTo = f.Assigned_To__r.Name;
       fulfilmentReqDTO.fullfilled = f.Fulfilled__c ? 'Yes' : 'No';
       fulfilmentReqDTO.status = f.Status__c;
@@ -166,8 +172,14 @@ public with sharing class WarehouseController {
         productItem.productItemQuantity = p.QuantityOnHand;
         productItem.productItemSerialNumber = p.SerialNumber;
         productItem.productName = p.Product2.Name;
-        productItem.productUrl = '/' + productItem.productId;
-        productItem.productItemUrl = '/' + productItem.productItemId;
+        productItem.productUrl =
+          URL.getSalesforceBaseUrl() +
+          '/' +
+          productItem.productId;
+        productItem.productItemUrl =
+          URL.getSalesforceBaseUrl() +
+          '/' +
+          productItem.productItemId;
         lstProductItemDTO.add(productItem);
       }
     }
