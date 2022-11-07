@@ -37,4 +37,20 @@ public with sharing class RegionController {
 
     return regionDTO;
   }
+
+  @AuraEnabled(cacheable=true)
+  public static String getRegionalManagerByRegionId(String regionId) {
+    List<Region__c> regions = [
+      SELECT Regional_ManagerId__c
+      FROM Region__c
+      WHERE Id = :regionId
+      WITH SECURITY_ENFORCED
+    ];
+
+    if (regions.size() == 0) {
+      return null;
+    }
+
+    return regions[0].Regional_ManagerId__c;
+  }
 }
