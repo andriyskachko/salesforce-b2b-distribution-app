@@ -80,7 +80,7 @@ public with sharing class WarehouseController {
         CreatedDate
       FROM Fulfilment_Request__c
       WHERE LocationId__c = :locationId
-      // WITH SECURITY_ENFORCED
+      WITH SECURITY_ENFORCED
       ORDER BY CreatedDate DESC
     ]) {
       FulfilmentRequestDTO fulfilmentReqDTO = new FulfilmentRequestDTO();
@@ -175,7 +175,7 @@ public with sharing class WarehouseController {
     return lstProductItemDTO;
   }
 
-  @AuraEnabled
+  @AuraEnabled(cacheable=true)
   public static Id getWarehouseLocationId(String warehouseId) {
     List<Warehouse__c> warehouses = [
       SELECT LocationId__c
