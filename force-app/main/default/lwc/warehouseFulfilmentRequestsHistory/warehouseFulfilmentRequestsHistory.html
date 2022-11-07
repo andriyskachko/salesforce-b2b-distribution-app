@@ -16,50 +16,18 @@
         if:true={requestsCount}
         class="slds-card__body slds-card__body_inner"
       >
-        <span class="slds-form-element__static"
-          ><a href={latestFulfilmentRequest.requestUrl}
-            >{latestFulfilmentRequest.requestName}</a
+        <span class="slds-form-element__static slds-p-bottom_small"
+          ><a target="_blank" href={latestFulfilmentRequest.requestUrl}
+            >{requestName}</a
           ></span
         >
-        <div class="slds-form" role="list">
-          <div class="slds-form__item" role="listitem">
-            <div
-              class="slds-form-element slds-form-element_horizontal slds-form-element__readonly"
-            >
-              <label class="slds-form-element__label">Assigned To</label>
-              <div class="slds-form-element__control">
-                <div class="slds-form-element__static">
-                  {latestFulfilmentRequest.assignedTo}
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="slds-form__item" role="listitem">
-            <div
-              class="slds-form-element slds-form-element_horizontal slds-form-element__readonly"
-            >
-              <label class="slds-form-element__label">Status</label>
-              <div class="slds-form-element__control">
-                <div class="slds-form-element__static">
-                  {latestFulfilmentRequest.status}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="slds-form__item" role="listitem">
-          <div
-            class="slds-form-element slds-form-element_horizontal slds-form-element__readonly"
-          >
-            <label class="slds-form-element__label">Fullfilled</label>
-            <div class="slds-form-element__control">
-              <div class="slds-form-element__static">
-                {latestFulfilmentRequest.fullfilled}
-              </div>
-            </div>
-          </div>
-        </div>
+        <lightning-record-form
+          record-id={requestId}
+          object-api-name={objectApiName}
+          fields={ownRecordFields}
+        ></lightning-record-form>
       </div>
+
       <div
         if:false={requestsCount}
         class="slds-illustration slds-illustration_small"

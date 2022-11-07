@@ -1,89 +1,190 @@
 import { LightningElement, wire } from 'lwc';
 import getFulfilmentRequestsByWarehouseId from '@salesforce/apex/WarehouseController.getFulfilmentRequestsByWarehouseId';
+import getWarehouseLocationId from '@salesforce/apex/WarehouseController.getWarehouseLocationId';
+import getRegionalManagerByRegionId from '@salesforce/apex/RegionController.getRegionalManagerByRegionId';
 import {
   APPLICATION_SCOPE,
   MessageContext,
   subscribe,
   unsubscribe
 } from 'lightning/messageService';
-import warehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
+import WarehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
+import RegionSelectedChannel from '@salesforce/messageChannel/RegionSelectedChannel__c';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import CreateNewRecordModal from 'c/createNewRecordModal';
+import FULFILMENT_REQUEST_OBJECT from '@salesforce/schema/Fulfilment_Request__c';
+import DESCRIPTION_FIELD from '@salesforce/schema/Fulfilment_Request__c.Description__c';
+import ASSIGNED_FIELD from '@salesforce/schema/Fulfilment_Request__c.Assigned_To__c';
+import LOCATION_FIELD from '@salesforce/schema/Fulfilment_Request__c.LocationId__c';
+import DUE_DATE_FIELD from '@salesforce/schema/Fulfilment_Request__c.Due_Date__c';
+import NAME_FIELD from '@salesforce/schema/Fulfilment_Request__c.Name';
+import PRODUCT_ITEM_FIELD from '@salesforce/schema/Fulfilment_Request__c.Product_ItemId__c';
+import QUANTITY_REQUESTED_FIELD from '@salesforce/schema/Fulfilment_Request__c.Quantity_Requested__c';
+
+const MODAL_FIELDS = [
+  NAME_FIELD,
+  DESCRIPTION_FIELD,
+  PRODUCT_ITEM_FIELD,
+  QUANTITY_REQUESTED_FIELD,
+  DUE_DATE_FIELD
+];
+
+const OWN_RECORD_FIELDS = [
+  ASSIGNED_FIELD,
+  PRODUCT_ITEM_FIELD,
+  QUANTITY_REQUESTED_FIELD,
+  DUE_DATE_FIELD
+];
 
 export default class WarehouseFulfilmentRequestsHistory extends LightningElement {
-  /** @type {string} */
-  warehouseId;
-  subscription;
+  modalFields = MODAL_FIELDS;
+  ownRecordFields = OWN_RECORD_FIELDS;
+  objectApiName = FULFILMENT_REQUEST_OBJECT;
+  regionId = '';
+  warehouseId = '';
+  subscriptions = [];
   /** @type {FulfilmentRequestDTO[]} */
-  _requests = [];
+  requests = [];
 
   @wire(getFulfilmentRequestsByWarehouseId, { warehouseId: '$warehouseId' })
   wiredRequests({ error, data }) {
     if (data) {
-      this._requests = data;
-      this.error = undefined;
-      console.log(this._requests);
+      this.requests = data;
     } else if (error) {
-      this._requests = [];
-      this.error = error;
+      console.log(error);
     }
   }
+
+  @wire(getRegionalManagerByRegionId, { regionId: '$regionId' })
+  _regionalManager;
+
+  @wire(getWarehouseLocationId, { warehouseId: '$warehouseId' })
+  _locationId;
 
   @wire(MessageContext)
   messageContext;
 
   connectedCallback() {
-    this.subscribeToMessageChannel();
+    this.initSubscriptions();
   }
 
   disconnectedCallback() {
-    this.unsubscribeMessageChannel();
+    this.terminateSubscriptions();
   }
 
-  subscribeToMessageChannel() {
-    if (!this.subscription) {
-      this.subscription = subscribe(
-        this.messageContext,
-        warehouseSelectedChannel,
-        (message) => this.handleWarehouseSelected(message),
-        { scope: APPLICATION_SCOPE }
-      );
-    }
+  initSubscriptions() {
+    this.subscribeToWarehouseMessageChannel();
+    this.subscribeToRegionMessageChannel();
   }
 
-  unsubscribeMessageChannel() {
-    unsubscribe(this.subscription);
-    this.subscription = null;
+  terminateSubscriptions() {
+    this.subscriptions.forEach((sub) => {
+      unsubscribe(sub);
+    });
+
+    this.subscriptions = [];
   }
 
+  subscribeToWarehouseMessageChannel() {
+    const sub = subscribe(
+      this.messageContext,
+      WarehouseSelectedChannel,
+      (message) => this.handleWarehouseSelected(message),
+      { scope: APPLICATION_SCOPE }
+    );
+    this.subscriptions.push(sub);
+  }
+
+  subscribeToRegionMessageChannel() {
+    const sub = subscribe(
+      this.messageContext,
+      RegionSelectedChannel,
+      (message) => this.handleRegionSelected(message),
+      { scope: APPLICATION_SCOPE }
+    );
+    this.subscriptions.push(sub);
+  }
+
+  /** @param {WarehousePayload} message */
   handleWarehouseSelected(message) {
     const { warehouseId } = message;
     this.warehouseId = warehouseId;
   }
 
-  handleViewAll() {
-    console.log('handled view all');
+  /** @param {RegionPayload} message */
+  handleRegionSelected(message) {
+    const { regionId } = message;
+    this.regionId = regionId;
   }
 
-  handleAddRequest() {
-    console.log('handled add request');
+  handleViewAll() {
+    console.log('handled view all');
+    console.log(this.propsForModalComponent);
+  }
+
+  async handleAddRequest() {
+    const result = await CreateNewRecordModal.open({
+      size: 'small',
+      objectName: 'Fulfilment Request',
+      objectApiName: this.objectApiName,
+      fields: this.modalFields,
+      props: this.propsForModalComponent
+    });
+
+    if (result) {
+      const evt = new ShowToastEvent({
+        title: 'Successfully created a record',
+        message: 'Record ID: ' + result,
+        variant: 'success'
+      });
+      this.dispatchEvent(evt);
+    }
+  }
+
+  get cardTitle() {
+    return 'Fulfilment Requests ' + this.cardTitleCount;
+  }
+
+  /** @type {string} */
+  get locationId() {
+    return this._locationId ? this._locationId.data : '';
+  }
+
+  /** @type {string} */
+  get regionalManagerId() {
+    return this._regionalManager ? this._regionalManager.data : '';
+  }
+
+  /** @type {Prop[]} */
+  get propsForModalComponent() {
+    return [
+      {
+        fieldName: ASSIGNED_FIELD.fieldApiName,
+        value: this.regionalManagerId
+      },
+      { fieldName: LOCATION_FIELD.fieldApiName, value: this.locationId }
+    ];
+  }
+
+  get requestName() {
+    return this.latestFulfilmentRequest.requestName;
+  }
+
+  get requestsCount() {
+    return this.requests.length;
+  }
+
+  get cardTitleCount() {
+    return this.warehouseId ? '(' + this.requestsCount + ')' : '';
   }
 
   /** @type {FulfilmentRequestDTO} */
   get latestFulfilmentRequest() {
-    return this._requests[0];
-  }
-
-  /** @type {Number} */
-  get requestsCount() {
-    return this._requests.length;
+    return this.requests.length ? this.requests[0] : null;
   }
 
   /** @type {string} */
-  get cardTitle() {
-    return 'Fulfilment Requests' + this.cardTitleCount;
-  }
-
-  /** @type {string} */
-  get cardTitleCount() {
-    return this.warehouseId ? ` (${this.requestsCount})` : '';
+  get requestId() {
+    return this.latestFulfilmentRequest.requestId;
   }
 }
