@@ -1,4 +1,5 @@
 import { LightningElement, wire } from 'lwc';
+import getWarehousesInRegion from '@salesforce/apex/WarehouseController.getWarehousesInRegion';
 import {
   publish,
   MessageContext,
@@ -7,19 +8,14 @@ import {
   APPLICATION_SCOPE
 } from 'lightning/messageService';
 import warehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
-import regionSelectedChannel from '@salesforce/messageChannel/RegionSelectedChannel__c';
-import getWarehousesInRegion from '@salesforce/apex/WarehouseController.getWarehousesInRegion';
+import RegionSelectedChannel from '@salesforce/messageChannel/RegionSelectedChannel__c';
 
 export default class WarehousePicker extends LightningElement {
-  regionSelectedSubscription;
-
-  /** @type {string} */
-  regionId;
+  subscriptions = [];
+  regionId = '';
   value = '';
-
   /** @type {WarehouseDTO[]} */
-  _warehouses;
-
+  _warehouses = [];
   placeHolder = 'Select Region first';
   disabled = true;
 
@@ -45,27 +41,33 @@ export default class WarehousePicker extends LightningElement {
   }
 
   connectedCallback() {
-    this.subscribeToRegionSelectedMessageChannel();
+    this.initSubscriptions();
   }
 
   disconnectedCallback() {
-    this.unsubscribeRegionSelectedMessageChannel();
+    this.terminateSubscriptions();
+  }
+
+  initSubscriptions() {
+    this.subscribeToRegionSelectedMessageChannel();
+  }
+  terminateSubscriptions() {
+    this.subscriptions.forEach((sub) => {
+      unsubscribe(sub);
+    });
+
+    this.subscriptions = [];
   }
 
   subscribeToRegionSelectedMessageChannel() {
-    if (!this.regionSelectedSubscription) {
-      this.regionSelectedSubscription = subscribe(
-        this.messageContext,
-        regionSelectedChannel,
-        (message) => this.handleRegionSelected(message),
-        { scope: APPLICATION_SCOPE }
-      );
-    }
-  }
+    const sub = subscribe(
+      this.messageContext,
+      RegionSelectedChannel,
+      (message) => this.handleRegionSelected(message),
+      { scope: APPLICATION_SCOPE }
+    );
 
-  unsubscribeRegionSelectedMessageChannel() {
-    unsubscribe(this.regionSelectedSubscription);
-    this.regionSelectedSubscription = null;
+    this.subscriptions.push(sub);
   }
 
   /** @param {RegionPayload} message */

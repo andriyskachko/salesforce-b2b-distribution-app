@@ -95,6 +95,7 @@ export default class WarehouseProductsTable extends LightningElement {
   initSubscriptions() {
     this.subscribeToMessageChannel();
   }
+
   terminateSubscriptions() {
     this.subscriptions.forEach((sub) => {
       unsubscribe(sub);
@@ -114,6 +115,7 @@ export default class WarehouseProductsTable extends LightningElement {
     this.subscriptions.push(sub);
   }
 
+  /** @param {WarehousePayload} message*/
   handleWarehouseSelected(message) {
     const { warehouseId } = message;
     this.warehouseId = warehouseId;
@@ -145,7 +147,6 @@ export default class WarehouseProductsTable extends LightningElement {
       objectName: 'Product Item',
       objectApiName: this.objectApiName,
       fields: this.fields,
-      /** @type {Prop[]} */
       props: this.props
     });
 
@@ -175,6 +176,7 @@ export default class WarehouseProductsTable extends LightningElement {
     return this.warehouseId && this._data.length === 0;
   }
 
+  /** @type {string} */
   get locationId() {
     return this._locationId ? this._locationId.data : '';
   }
@@ -183,6 +185,7 @@ export default class WarehouseProductsTable extends LightningElement {
     return this._filteredData;
   }
 
+  /** @type {Prop[]} */
   get props() {
     return [
       {

@@ -19,6 +19,32 @@ public with sharing class WarehouseController {
   }
 
   @AuraEnabled(cacheable=true)
+  public static WarehouseDTO getWarehouseInfoById(String warehouseId) {
+    Warehouse__c warehouse = [
+      SELECT Id, Name, LocationId__c, LocationId__r.Name
+      FROM Warehouse__c
+      WHERE Id = :warehouseId
+      WITH SECURITY_ENFORCED
+      LIMIT 1
+    ];
+
+    if (warehouse == null) {
+      return null;
+    }
+
+    WarehouseDTO warehouseDTO = new WarehouseDTO();
+    warehouseDTO.id = warehouse.Id;
+    warehouseDTO.name = warehouse.Name;
+    warehouseDTO.locationId = warehouse.LocationId__c;
+    warehouseDTO.locationName = warehouse.LocationId__r.Name;
+    warehouseDTO.locationUrl =
+      URL.getSalesforceBaseUrl() +
+      '/' +
+      warehouse.LocationId__c;
+    return warehouseDTO;
+  }
+
+  @AuraEnabled(cacheable=true)
   public static List<FulfilmentRequestDTO> getFulfilmentRequestsByWarehouseId(
     String warehouseId
   ) {

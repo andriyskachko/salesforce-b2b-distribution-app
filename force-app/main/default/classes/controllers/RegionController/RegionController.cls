@@ -17,28 +17,6 @@ public with sharing class RegionController {
   }
 
   @AuraEnabled(cacheable=true)
-  public static RegionDTO getRegionById(String regionId) {
-    Region__c region = [
-      SELECT Name, Regional_ManagerId__c, Regional_ManagerId__r.Name
-      FROM Region__c
-      WHERE Id = :regionId
-      WITH SECURITY_ENFORCED
-    ];
-
-    if (region == null) {
-      return null;
-    }
-
-    RegionDTO regionDTO = new RegionDTO();
-    regionDTO.id = regionId;
-    regionDTO.name = region.Name;
-    regionDTO.regionalManagerId = region.Regional_ManagerId__c;
-    regionDTO.regionalManagerName = region.Regional_ManagerId__r.Name;
-
-    return regionDTO;
-  }
-
-  @AuraEnabled(cacheable=true)
   public static String getRegionalManagerByRegionId(String regionId) {
     List<Region__c> regions = [
       SELECT Regional_ManagerId__c
