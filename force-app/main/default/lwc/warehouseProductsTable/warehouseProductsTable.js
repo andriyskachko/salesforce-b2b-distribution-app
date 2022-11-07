@@ -1,15 +1,15 @@
 import { LightningElement, wire } from 'lwc';
-import getProductItemsInWarehouse from '@salesforce/apex/WarehouseController.getProductItemsInWarehouse';
-import getWarehouseLocationId from '@salesforce/apex/WarehouseController.getWarehouseLocationId';
 import {
-  APPLICATION_SCOPE,
   MessageContext,
   subscribe,
-  unsubscribe
+  unsubscribe,
+  APPLICATION_SCOPE
 } from 'lightning/messageService';
-import { ShowToastEvent } from 'lightning/platformShowToastEvent';
-import warehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
+import WarehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
 import CreateNewRecordModal from 'c/createNewRecordModal';
+import { ShowToastEvent } from 'lightning/platformShowToastEvent';
+import getProductItemsInWarehouse from '@salesforce/apex/WarehouseController.getProductItemsInWarehouse';
+import getWarehouseLocationId from '@salesforce/apex/WarehouseController.getWarehouseLocationId';
 import PRODUCT_ITEM_OBJECT from '@salesforce/schema/ProductItem';
 import PRODUCT_NAME_FIELD from '@salesforce/schema/ProductItem.Product2Id';
 import LOCATION_FIELD from '@salesforce/schema/ProductItem.LocationId';
@@ -52,20 +52,18 @@ const COLUMNS = [
 
 export default class WarehouseProductsTable extends LightningElement {
   searchString = '';
-  columns = COLUMNS;
-  warehouseId = '';
   defaultSortDirection = 'asc';
   sortDirection = 'asc';
   sortedBy = '';
-  subscription;
+  columns = COLUMNS;
   fields = FIELDS;
   objectApiName = PRODUCT_ITEM_OBJECT;
-
+  warehouseId = '';
+  subscriptions = [];
   /** @type {ProductItemDTO[]} */
   _data = [];
-
   /** @type {ProductItemDTO[]} */
-  _filteredData;
+  _filteredData = [];
 
   @wire(MessageContext)
   messageContext;
@@ -77,7 +75,8 @@ export default class WarehouseProductsTable extends LightningElement {
       this._filteredData = this._data;
       this.error = undefined;
     } else if (error) {
-      this._data = undefined;
+      this._data = [];
+      this._filteredData = [];
       this.error = error;
     }
   }
@@ -86,27 +85,33 @@ export default class WarehouseProductsTable extends LightningElement {
   _locationId;
 
   connectedCallback() {
-    this.subscribeToMessageChannel();
+    this.initSubscriptions();
   }
 
   disconnectedCallback() {
-    this.unsubscribeMessageChannel();
+    this.terminateSubscriptions();
+  }
+
+  initSubscriptions() {
+    this.subscribeToMessageChannel();
+  }
+  terminateSubscriptions() {
+    this.subscriptions.forEach((sub) => {
+      unsubscribe(sub);
+    });
+
+    this.subscriptions = [];
   }
 
   subscribeToMessageChannel() {
-    if (!this.subscription) {
-      this.subscription = subscribe(
-        this.messageContext,
-        warehouseSelectedChannel,
-        (message) => this.handleWarehouseSelected(message),
-        { scope: APPLICATION_SCOPE }
-      );
-    }
-  }
+    const sub = subscribe(
+      this.messageContext,
+      WarehouseSelectedChannel,
+      (message) => this.handleWarehouseSelected(message),
+      { scope: APPLICATION_SCOPE }
+    );
 
-  unsubscribeMessageChannel() {
-    unsubscribe(this.subscription);
-    this.subscription = null;
+    this.subscriptions.push(sub);
   }
 
   handleWarehouseSelected(message) {
@@ -141,21 +146,16 @@ export default class WarehouseProductsTable extends LightningElement {
       objectApiName: this.objectApiName,
       fields: this.fields,
       /** @type {Prop[]} */
-      props: [
-        {
-          fieldName: LOCATION_FIELD.fieldApiName,
-          value: this.locationId
-        }
-      ]
+      props: this.props
     });
 
     if (result) {
-      const evt = new ShowToastEvent({
+      const event = new ShowToastEvent({
         title: 'Successfully created a record',
         message: 'Record ID: ' + result,
         variant: 'success'
       });
-      this.dispatchEvent(evt);
+      this.dispatchEvent(event);
     }
   }
 
@@ -175,11 +175,20 @@ export default class WarehouseProductsTable extends LightningElement {
     return this.warehouseId && this._data.length === 0;
   }
 
+  get locationId() {
+    return this._locationId ? this._locationId.data : '';
+  }
+
   get data() {
     return this._filteredData;
   }
 
-  get locationId() {
-    return this._locationId ? this._locationId.data : '';
+  get props() {
+    return [
+      {
+        fieldName: LOCATION_FIELD.fieldApiName,
+        value: this.locationId
+      }
+    ];
   }
 }
