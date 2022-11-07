@@ -67,3 +67,9 @@ interface FulfilmentRequestDTO {
   createdAt: Date;
   status: 'New' | 'In Process' | 'Completed';
 }
+
+interface Prop {
+  fieldName: string;
+  value: string;
+  displayValue?: string;
+}
