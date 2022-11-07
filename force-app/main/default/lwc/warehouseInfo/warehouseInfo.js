@@ -1,20 +1,20 @@
 import { LightningElement, wire } from 'lwc';
 import {
   MessageContext,
-  APPLICATION_SCOPE,
   subscribe,
-  unsubscribe
+  unsubscribe,
+  APPLICATION_SCOPE
 } from 'lightning/messageService';
-import warehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
+import WarehouseSelectedChannel from '@salesforce/messageChannel/WarehouseSelectedChannel__c';
 import WAREHOUSE_OBJECT from '@salesforce/schema/Warehouse__c';
 import WAREHOUSE_LOCATION_ID_FIELD from '@salesforce/schema/Warehouse__c.LocationId__c';
 
-const FIELDS = [WAREHOUSE_LOCATION_ID_FIELD.fieldApiName];
+const FIELDS = [WAREHOUSE_LOCATION_ID_FIELD];
 
 export default class WarehouseInfo extends LightningElement {
   fields = FIELDS;
-  objectApiName = WAREHOUSE_OBJECT.objectApiName;
-  warehouseSelectedSubscription;
+  objectApiName = WAREHOUSE_OBJECT;
+  subscriptions = [];
 
   /** @type {string} */
   warehouseId;
@@ -23,22 +23,34 @@ export default class WarehouseInfo extends LightningElement {
   messageContext;
 
   connectedCallback() {
-    this.subscribeToWarehouseSelectedMessageChannel();
+    this.initSubscriptions();
   }
 
   disconnectedCallback() {
-    this.unsubscribeWarehouseSelectedMessageChannel();
+    this.terminateSubscriptions();
+  }
+
+  initSubscriptions() {
+    this.subscribeToWarehouseSelectedMessageChannel();
+  }
+
+  terminateSubscriptions() {
+    this.subscriptions.forEach((sub) => {
+      unsubscribe(sub);
+    });
+
+    this.subscriptions = [];
   }
 
   subscribeToWarehouseSelectedMessageChannel() {
-    if (!this.warehouseSelectedSubscription) {
-      this.warehouseSelectedSubscription = subscribe(
-        this.messageContext,
-        warehouseSelectedChannel,
-        (message) => this.handleWarehouseSelected(message),
-        { scope: APPLICATION_SCOPE }
-      );
-    }
+    const sub = subscribe(
+      this.messageContext,
+      WarehouseSelectedChannel,
+      (message) => this.handleWarehouseSelected(message),
+      { scope: APPLICATION_SCOPE }
+    );
+
+    this.subscriptions.push(sub);
   }
 
   unsubscribeWarehouseSelectedMessageChannel() {

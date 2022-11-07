@@ -13,15 +13,12 @@
     <div class="slds-card__body slds-card__body_inner">
       <c-warehouse-picker></c-warehouse-picker>
       <div class="slds-p-top_small">
-        <template if:true={warehouseId}>
-          <lightning-record-form
-            if:true={warehouseId}
-            record-id={warehouseId}
-            object-api-name={objectApiName}
-            fields={fields}
-            mode="view"
-          ></lightning-record-form>
-        </template>
+        <lightning-record-form
+          if:true={warehouseId}
+          record-id={warehouseId}
+          object-api-name={objectApiName}
+          fields={fields}
+        ></lightning-record-form>
         <template if:false={warehouseId}>
           <div
             class="slds-illustration slds-illustration_small"
