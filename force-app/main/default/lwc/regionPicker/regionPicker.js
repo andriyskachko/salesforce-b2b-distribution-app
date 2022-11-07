@@ -6,32 +6,8 @@ import { publish, MessageContext } from 'lightning/messageService';
 export default class RegionPicker extends LightningElement {
   value = '';
 
-  /** @type {RegionDTO[]} */
-  _regions;
-
-  /** @type {Option[]} */
-  get options() {
-    if (this._regions) {
-      return this._regions.map((region) => {
-        return {
-          label: region.name,
-          value: region.id
-        };
-      });
-    }
-    return null;
-  }
-
   @wire(getRegions)
-  wiredGetRegions({ error, data }) {
-    if (data) {
-      this._regions = data;
-      this.error = undefined;
-    } else if (error) {
-      this._regions = undefined;
-      this.error = error;
-    }
-  }
+  _regions;
 
   @wire(MessageContext)
   messageContext;
@@ -45,5 +21,23 @@ export default class RegionPicker extends LightningElement {
     this.value = event.detail.value;
     this.publishPayload();
     this.dispatchEvent(new CustomEvent('changeregion', { detail: this.value }));
+  }
+
+  /** @type {RegionDTO[]} */
+  get regions() {
+    return this._regions ? this._regions.data : [];
+  }
+
+  /** @type {Option[]} */
+  get options() {
+    if (this.regions) {
+      return this.regions.map((region) => {
+        return {
+          label: region.name,
+          value: region.id
+        };
+      });
+    }
+    return [];
   }
 }
