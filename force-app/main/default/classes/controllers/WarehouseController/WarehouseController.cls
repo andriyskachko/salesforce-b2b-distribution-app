@@ -19,32 +19,6 @@ public with sharing class WarehouseController {
   }
 
   @AuraEnabled(cacheable=true)
-  public static WarehouseDTO getWarehouseInfoById(String warehouseId) {
-    Warehouse__c warehouse = [
-      SELECT Id, Name, LocationId__c, LocationId__r.Name
-      FROM Warehouse__c
-      WHERE Id = :warehouseId
-      WITH SECURITY_ENFORCED
-      LIMIT 1
-    ];
-
-    if (warehouse == null) {
-      return null;
-    }
-
-    WarehouseDTO warehouseDTO = new WarehouseDTO();
-    warehouseDTO.id = warehouse.Id;
-    warehouseDTO.name = warehouse.Name;
-    warehouseDTO.locationId = warehouse.LocationId__c;
-    warehouseDTO.locationName = warehouse.LocationId__r.Name;
-    warehouseDTO.locationUrl =
-      URL.getSalesforceBaseUrl() +
-      '/' +
-      warehouse.LocationId__c;
-    return warehouseDTO;
-  }
-
-  @AuraEnabled(cacheable=true)
   public static List<FulfilmentRequestDTO> getFulfilmentRequestsByWarehouseId(
     String warehouseId
   ) {
@@ -74,15 +48,19 @@ public with sharing class WarehouseController {
       FulfilmentRequestDTO fulfilmentReqDTO = new FulfilmentRequestDTO();
       fulfilmentReqDTO.requestId = f.Id;
       fulfilmentReqDTO.requestName = f.Name;
-      fulfilmentReqDTO.requestUrl = URL.getSalesforceBaseUrl() + '/' + f.Id;
+      fulfilmentReqDTO.requestUrl =
+        URL.getSalesforceBaseUrl().toExternalForm() +
+        '/' +
+        f.Id;
       fulfilmentReqDTO.assignedToUrl =
-        URL.getSalesforceBaseUrl() +
+        URL.getSalesforceBaseUrl().toExternalForm() +
         '/' +
         f.Assigned_To__c;
       fulfilmentReqDTO.assignedTo = f.Assigned_To__r.Name;
       fulfilmentReqDTO.fullfilled = f.Fulfilled__c ? 'Yes' : 'No';
       fulfilmentReqDTO.status = f.Status__c;
       fulfilmentReqDTO.createdAt = f.CreatedDate;
+
       lstFulfilmentRequestDTO.add(fulfilmentReqDTO);
     }
 
@@ -98,8 +76,6 @@ public with sharing class WarehouseController {
     if (locationId == null) {
       return null;
     }
-
-    List<ProductItemDTO> lstProductItemDTO = new List<ProductItemDTO>();
 
     Schema.Location location = [
       SELECT
@@ -120,6 +96,8 @@ public with sharing class WarehouseController {
       LIMIT 10
     ];
 
+    List<ProductItemDTO> lstProductItemDTO = new List<ProductItemDTO>();
+
     if (!location.ProductItems.isEmpty()) {
       for (ProductItem p : location.ProductItems) {
         ProductItemDTO productItem = new ProductItemDTO();
@@ -130,11 +108,11 @@ public with sharing class WarehouseController {
         productItem.productItemSerialNumber = p.SerialNumber;
         productItem.productName = p.Product2.Name;
         productItem.productUrl =
-          URL.getSalesforceBaseUrl() +
+          URL.getSalesforceBaseUrl().toExternalForm() +
           '/' +
           productItem.productId;
         productItem.productItemUrl =
-          URL.getSalesforceBaseUrl() +
+          URL.getSalesforceBaseUrl().toExternalForm() +
           '/' +
           productItem.productItemId;
         lstProductItemDTO.add(productItem);
