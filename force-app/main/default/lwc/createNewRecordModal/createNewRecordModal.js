@@ -26,7 +26,7 @@ export default class CreateNewRecordModal extends LightningModal {
     this.close();
   }
 
-  get label() {
+  get modalLabel() {
     return `Add new ${this.objectName}`;
   }
 }
