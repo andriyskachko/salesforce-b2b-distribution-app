@@ -143,7 +143,6 @@ export default class WarehouseProductsTable extends LightningElement {
   async handleAddProductItem() {
     const result = await CreateNewRecordModal.open({
       size: 'small',
-      description: "Accessible description of modal's purpose",
       objectName: 'Product Item',
       objectApiName: this.objectApiName,
       fields: this.fields,
@@ -169,7 +168,7 @@ export default class WarehouseProductsTable extends LightningElement {
       b = key(b) ? key(b) : '';
       return isReverse * ((a > b) - (b > a));
     });
-    this._data = parsedData;
+    this._filteredData = parsedData;
   }
 
   get warehouseIsEmpty() {
