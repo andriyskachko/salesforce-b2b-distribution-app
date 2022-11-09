@@ -142,7 +142,7 @@ export default class WarehouseFulfilmentRequestsHistory extends LightningElement
   }
 
   get cardTitle() {
-    return 'Fulfilment Requests ' + this.cardTitleCount;
+    return 'New Fulfilment Requests ' + this.cardTitleCount;
   }
 
   /** @type {string} */
@@ -171,7 +171,9 @@ export default class WarehouseFulfilmentRequestsHistory extends LightningElement
   }
 
   get requestsCount() {
-    return this.requests.length;
+    return this.requests.filter((req) => {
+      return req.status === 'New';
+    }).length;
   }
 
   get cardTitleCount() {
