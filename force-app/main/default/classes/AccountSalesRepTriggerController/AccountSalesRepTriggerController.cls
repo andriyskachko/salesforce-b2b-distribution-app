@@ -1,48 +1,53 @@
 public with sharing class AccountSalesRepTriggerController {
-  private static List<Opportunity> getUpdatedSalesManagerForAccountOpportunities(
-    Id accountId
+  public static void updateSalesManagerForAccountsOpportunities(
+    List<Account> newAccounts,
+    Map<Id, Account> oldAccountsMap
   ) {
-    List<Account> lstAccount = [
-      SELECT Id, Sales_ManagerId__c
+    List<Account> lstAccounts = [
+      SELECT
+        Sales_ManagerId__c,
+        Assigned_ById__c,
+        Assigned_At__c,
+        LastModifiedById,
+        (SELECT Id, Sales_ManagerId__c FROM Opportunities)
       FROM Account
-      WHERE Id = :accountId
+      WHERE Id IN :newAccounts
       WITH SECURITY_ENFORCED
     ];
 
-    if (lstAccount.size() == 0) {
-      return null;
+    if (lstAccounts.size() == 0) {
+      return;
     }
 
-    Id salesRepId = lstAccount[0].Sales_ManagerId__c;
-
+    List<Account> updatedAccounts = new List<Account>();
     List<Opportunity> updatedOpportunities = new List<Opportunity>();
 
-    for (Opportunity o : [
-      SELECT Id, Sales_ManagerId__c
-      FROM Opportunity
-      WHERE AccountId = :accountId
-      WITH SECURITY_ENFORCED
-    ]) {
-      if (o.Sales_ManagerId__c == null) {
-        o.Sales_ManagerId__c = salesRepId;
-        updatedOpportunities.add(o);
+    for (Account a : lstAccounts) {
+      Account oldAccount = oldAccountsMap.get(a.Id);
+
+      if (
+        a.Sales_ManagerId__c == null ||
+        oldAccount.Sales_ManagerId__c == a.Sales_ManagerId__c
+      ) {
+        continue;
+      }
+
+      a.Assigned_ById__c = a.LastModifiedById;
+      a.Assigned_At__c = System.now();
+
+      updatedAccounts.add(a);
+
+      if (a.Opportunities.size() != 0) {
+        for (Opportunity o : a.Opportunities) {
+          if (o.Sales_ManagerId__c == null) {
+            o.Sales_ManagerId__c = a.Sales_ManagerId__c;
+            updatedOpportunities.add(o);
+          }
+        }
       }
     }
 
-    return updatedOpportunities;
-  }
-
-  public static void updateSalesManagerForAccountsOpportunities(
-    List<Account> accounts
-  ) {
-    List<Opportunity> updatedOpportunities = new List<Opportunity>();
-    for (Account a : accounts) {
-      List<Opportunity> updatedOpps = AccountSalesRepTriggerController.getUpdatedSalesManagerForAccountOpportunities(
-        a.Id
-      );
-      updatedOpportunities.addAll(updatedOpps);
-    }
-
+    update updatedAccounts;
     update updatedOpportunities;
   }
 }
