@@ -1,0 +1,17 @@
+<template>
+  <lightning-input
+    type="search"
+    label="Search Customers"
+    onchange={handleSearch}
+  ></lightning-input>
+  <lightning-datatable
+    key-field="id"
+    default-sort-direction={defaultSortDirection}
+    sorted-direction={sortDirection}
+    sorted-by={sortedBy}
+    onsort={handleSort}
+    data={data}
+    columns={columns}
+    onrowselection={handleRowSelection}
+  ></lightning-datatable>
+</template>
