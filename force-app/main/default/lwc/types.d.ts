@@ -28,6 +28,10 @@ interface RegionPayload {
   regionId: string;
 }
 
+interface AccountsPayload {
+  lstAccountId: string[];
+}
+
 interface ProductItemDTO {
   productItemId: string;
   productItemUrl: string;
@@ -72,4 +76,15 @@ interface Prop {
   fieldName: string;
   value: string;
   displayValue?: string;
+}
+
+interface AccountDTO {
+  id: string;
+  name: string;
+  url: string;
+  assignedBy: string;
+  assignedByUrl: string;
+  assignedAt: string;
+  lastContactedAt: string;
+  yearStarted: string;
 }
