@@ -4,7 +4,17 @@
     label="Search Customers"
     onchange={handleSearch}
   ></lightning-input>
-  <lightning-datatable
+  <c-datatable-pagination
+    key-field="id"
+    display-amount="1"
+    columns={columns}
+    source-data={data}
+    default-sort-direction={defaultSortDirection}
+    sorted-by={sortedBy}
+    onrowsselected={handleRowSelection}
+    onsorted={handleSort}
+  ></c-datatable-pagination>
+  <!-- <lightning-datatable
     key-field="id"
     default-sort-direction={defaultSortDirection}
     sorted-direction={sortDirection}
@@ -13,5 +23,5 @@
     data={data}
     columns={columns}
     onrowselection={handleRowSelection}
-  ></lightning-datatable>
+  ></lightning-datatable> -->
 </template>

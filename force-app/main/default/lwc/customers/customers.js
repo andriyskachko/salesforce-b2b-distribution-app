@@ -2,21 +2,7 @@ import { LightningElement, wire } from 'lwc';
 import { MessageContext, publish } from 'lightning/messageService';
 import AccountSelectedChannel from '@salesforce/messageChannel/AccountSelectedChannel__c';
 import getSalesManagerAssignedCustomers from '@salesforce/apex/AccountController.getSalesManagerAssignedCustomers';
-// import ACCOUNT_OBJECT from '@salesforce/schema/Account';
-// import NAME_FIELD from '@salesforce/schema/Account.Name';
-// import ASSIGNED_BY_FIELD from '@salesforce/schema/Account.Assigned_ById__c';
-// import ASSIGNED_AT_FIELD from '@salesforce/schema/Account.Assigned_At__c';
-// import YEAR_STARDED_FIELD from '@salesforce/schema/Account.YearStarted';
-// import LAST_CONTACTED_AT_FIELD from '@salesforce/schema/Account.Last_Contacted_At__c';
 import Id from '@salesforce/user/Id';
-
-// const FIELDS = [
-//   NAME_FIELD,
-//   ASSIGNED_BY_FIELD,
-//   ASSIGNED_AT_FIELD,
-//   LAST_CONTACTED_AT_FIELD,
-//   YEAR_STARDED_FIELD
-// ];
 
 /** @type {DatatableColumn[]} */
 const COLUMNS = [
@@ -49,8 +35,7 @@ const COLUMNS = [
   }
 ];
 
-export default class CustomersDatatable extends LightningElement {
-  // objectApiName = ACCOUNT_OBJECT;
+export default class Customers extends LightningElement {
   userId = Id;
   /** @type {AccountDTO[]} */
   _accounts = [];
@@ -58,12 +43,17 @@ export default class CustomersDatatable extends LightningElement {
   _filteredAccounts = [];
   /** @type {AccountDTO[]} */
   selectedAccounts = [];
+  /** @type {AccountDTO[]} */
+  allSelectedAccounts = [];
   columns = COLUMNS;
   error;
   searchString = '';
   defaultSortDirection = 'asc';
   sortDirection = 'asc';
   sortedBy = '';
+  pageNumber = 0;
+  /** @type {AccountDTO[]} */
+  pageAccounts = [];
 
   @wire(getSalesManagerAssignedCustomers, { userId: '$userId' })
   wiredAccounts({ error, data }) {
@@ -90,7 +80,11 @@ export default class CustomersDatatable extends LightningElement {
   }
 
   publishPayload() {
-    publish(this.messageContext, AccountSelectedChannel, this.selectedAccounts);
+    publish(
+      this.messageContext,
+      AccountSelectedChannel,
+      this.selectedAccounts.map((a) => a.id)
+    );
   }
 
   handleSearch(event) {
