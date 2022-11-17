@@ -1,7 +1,44 @@
 <template>
-  <!--Render data if there is data to show-->
   <template if:true={recordsOnPage}>
-    <!--Data Table that displays the pages data-->
+    <div class="slds-grid slds-wrap slds-p-top_small slds-p-bottom_large">
+      <lightning-combobox
+        class="slds-col slds-size_1-of-1 slds-large-size_4-of-12"
+        name="records"
+        label="Records per page"
+        value={displayAmount}
+        options={options}
+        onchange={handleChange}
+      ></lightning-combobox>
+      <div
+        class="slds-col slds-size_1-of-1 slds-large-size_8-of-12"
+        style="height: 100%"
+      >
+        <div class="slds-align_absolute-center">
+          <lightning-button
+            name="buttonBackwards"
+            label="Previous"
+            title="Previous"
+            icon-name="utility:back"
+            onclick={handleButtonPrevious}
+            class="slds-var-m-left_x-small"
+            disabled={disabledPreviousButton}
+          >
+          </lightning-button>
+          Page {currentPage} of {maxPages}
+          <lightning-button
+            name="buttonForwards"
+            label="Next"
+            title="Next"
+            icon-name="utility:forward"
+            onclick={handleButtonNext}
+            class="slds-var-m-left_x-small"
+            disabled={disabledNextButton}
+          >
+          </lightning-button>
+        </div>
+      </div>
+    </div>
+
     <lightning-datatable
       key-field={keyField}
       data={pagedData}
@@ -10,11 +47,10 @@
       sorted-direction={sortDirection}
       sorted-by={sortedBy}
       onsort={handleSort}
-      onrowselection={handleRowSelection}
+      onrowselection={handleRowSelected}
     >
     </lightning-datatable>
 
-    <!--Indicate if loading is underway. This should be so fast that it will never be noticed-->
     <template if:true={loading}>
       <lightning-dynamic-icon
         type="ellie"
@@ -24,40 +60,22 @@
       </lightning-dynamic-icon
       >Loading...
     </template>
-
-    <!--Navigation controls-->
-    <div class="slds-var-p-top_small slds-align_absolute-center">
-      <!--Previous button-->
-      <lightning-button
-        name="buttonBackwards"
-        label=""
-        title=""
-        icon-name="utility:back"
-        onclick={handleButtonPrevious}
-        class="slds-var-m-left_x-small"
-        disabled={disabledPreviousButton}
-      >
-      </lightning-button>
-
-      <!--Current Status-->
-      &nbsp;&nbsp;Showing {currentPage} of {maxPages} results.
-
-      <!--Next button-->
-      <lightning-button
-        name="buttonForwards"
-        label=""
-        title=""
-        icon-name="utility:forward"
-        onclick={handleButtonNext}
-        class="slds-var-m-left_x-small"
-        disabled={disabledNextButton}
-      >
-      </lightning-button>
-    </div>
   </template>
 
-  <!--If there is no data to render, just leave a message-->
-  <template if:false={recordsOnPage}>
-    <div>No data to display</div>
+  <template if:false={loading}>
+    <div
+      if:false={recordsOnPage}
+      class="slds-illustration slds-illustration_large slds-p-top_large"
+      aria-hidden="true"
+    >
+      <img
+        src="/projRes/ui-home-private/emptyStates/noEvents.svg"
+        class="slds-illustration__svg"
+        alt="No Customers assigned yet"
+      />
+      <div class="slds-text-color_weak">
+        <h3 class="slds-text-heading_medium">No Customers found.</h3>
+      </div>
+    </div>
   </template>
 </template>

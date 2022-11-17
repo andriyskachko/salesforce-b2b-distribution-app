@@ -1,14 +1,14 @@
 import { LightningElement, api } from 'lwc';
-
 export default class DatatablePagination extends LightningElement {
   // The key column for the data table
   @api keyField;
   @api defaultSortDirection;
   @api sortDirection;
   @api sortedBy;
+  /** @type {Option[]} */
+  @api options = [];
+  _displayAmount = '10';
 
-  // Maximum amount of data rows to display at one time
-  @api
   get displayAmount() {
     return this._displayAmount;
   }
@@ -16,7 +16,6 @@ export default class DatatablePagination extends LightningElement {
     this._displayAmount = value;
     this.gotoPage(1); // If pagination size changes then we need to reset
   }
-  _displayAmount;
 
   // Columns to bind to the data table
   /** @type {DatatableColumn[]} */
@@ -185,11 +184,15 @@ export default class DatatablePagination extends LightningElement {
   }
 
   handleRowSelected(event) {
-    const sortEvent = new CustomEvent('rowsSelected', {
+    const rowsSelectedEvent = new CustomEvent('rowsselected', {
       detail: {
         selectedRows: event.detail.selectedRows
       }
     });
-    this.dispatchEvent(sortEvent);
+    this.dispatchEvent(rowsSelectedEvent);
+  }
+
+  handleChange(event) {
+    this.displayAmount = event.detail.value;
   }
 }

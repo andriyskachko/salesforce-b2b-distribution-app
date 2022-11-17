@@ -1,27 +1,29 @@
 <template>
-  <lightning-input
-    type="search"
-    label="Search Customers"
-    onchange={handleSearch}
-  ></lightning-input>
-  <c-datatable-pagination
-    key-field="id"
-    display-amount="1"
-    columns={columns}
-    source-data={data}
-    default-sort-direction={defaultSortDirection}
-    sorted-by={sortedBy}
-    onrowsselected={handleRowSelection}
-    onsorted={handleSort}
-  ></c-datatable-pagination>
-  <!-- <lightning-datatable
-    key-field="id"
-    default-sort-direction={defaultSortDirection}
-    sorted-direction={sortDirection}
-    sorted-by={sortedBy}
-    onsort={handleSort}
-    data={data}
-    columns={columns}
-    onrowselection={handleRowSelection}
-  ></lightning-datatable> -->
+  <lightning-card
+    variant="narrow"
+    icon-name="standard:instore_locations"
+    title="Assigned Customers"
+    class="slds-p-around_xx-small"
+  >
+    <div class="slds-card__body slds-card__body_inner">
+      <div class="slds-p-top_small">
+        <lightning-input
+          type="search"
+          label="Search Customers"
+          onchange={handleSearch}
+        ></lightning-input>
+        <c-datatable-pagination
+          key-field="id"
+          display-amount={displayAmount}
+          columns={columns}
+          source-data={data}
+          default-sort-direction={defaultSortDirection}
+          sorted-by={sortedBy}
+          onrowsselected={handleRowSelection}
+          onsorted={handleSort}
+          options={options}
+        ></c-datatable-pagination>
+      </div>
+    </div>
+  </lightning-card>
 </template>

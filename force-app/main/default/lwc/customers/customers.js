@@ -35,6 +35,13 @@ const COLUMNS = [
   }
 ];
 
+/** @type {Option[]} */
+const OPTIONS = [
+  { label: '5', value: '5' },
+  { label: '10', value: '10' },
+  { label: '20', value: '20' }
+];
+
 export default class Customers extends LightningElement {
   userId = Id;
   /** @type {AccountDTO[]} */
@@ -54,6 +61,8 @@ export default class Customers extends LightningElement {
   pageNumber = 0;
   /** @type {AccountDTO[]} */
   pageAccounts = [];
+  options = OPTIONS;
+  displayAmount = OPTIONS[0].value;
 
   @wire(getSalesManagerAssignedCustomers, { userId: '$userId' })
   wiredAccounts({ error, data }) {
