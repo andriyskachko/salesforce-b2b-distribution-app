@@ -37,12 +37,10 @@ public with sharing class AccountSalesRepTriggerController {
 
       updatedAccounts.add(a);
 
-      if (a.Opportunities.size() != 0) {
-        for (Opportunity o : a.Opportunities) {
-          if (o.Sales_ManagerId__c == null) {
-            o.Sales_ManagerId__c = a.Sales_ManagerId__c;
-            updatedOpportunities.add(o);
-          }
+      for (Opportunity o : a.Opportunities) {
+        if (o.Sales_ManagerId__c == null) {
+          o.Sales_ManagerId__c = a.Sales_ManagerId__c;
+          updatedOpportunities.add(o);
         }
       }
     }

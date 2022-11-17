@@ -41,4 +41,36 @@ public with sharing class AccountController {
 
     return lstAcct;
   }
+
+  @AuraEnabled
+  public static List<Opportunity> getOpportunitiesForAccounts(
+    List<String> accountIds
+  ) {
+    List<Opportunity> lstOpps = new List<Opportunity>();
+
+    for (Account a : [
+      SELECT
+        Id,
+        Name,
+        (SELECT Id, Name, StageName, Account.Name, AccountId FROM Opportunities)
+      FROM Account
+      WHERE Id IN :accountIds
+      WITH SECURITY_ENFORCED
+      LIMIT 5000
+    ]) {
+      if (a.Opportunities.size() > 0) {
+        for (Opportunity o : a.Opportunities) {
+          AccountOpportunityDTO acctOppDTO = new AccountOpportunityDTO();
+          acctOppDTO.id = o.Id;
+          acctOppDTO.name = o.Name;
+          acctOppDTO.url = Utils.getRecordUrL(o.Id);
+          acctOppDTO.stage = o.StageName;
+          acctOppDTO.accountName = o.Account.Name;
+          acctOppDTO.accountUrl = Utils.getRecordUrL(o.AccountId);
+        }
+      }
+    }
+
+    return lstOpps;
+  }
 }
