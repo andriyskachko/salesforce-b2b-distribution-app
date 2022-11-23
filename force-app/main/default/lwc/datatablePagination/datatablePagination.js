@@ -5,8 +5,10 @@ export default class DatatablePagination extends LightningElement {
   @api defaultSortDirection;
   @api sortDirection;
   @api sortedBy;
+  @api hideCheckboxColumn = false;
   /** @type {Option[]} */
   @api options = [];
+  @api objectApiName;
   _displayAmount = '10';
 
   get displayAmount() {
@@ -177,10 +179,17 @@ export default class DatatablePagination extends LightningElement {
     const sortEvent = new CustomEvent('sorted', {
       detail: {
         fieldName: event.detail.fieldName,
-        sortDirection: event.detail.sortDirection
+        sortDirection:
+          event.detail.sortDirection === this.sortDirection
+            ? this.oppositeSortDirection
+            : event.detail.sortDirection
       }
     });
     this.dispatchEvent(sortEvent);
+  }
+
+  get oppositeSortDirection() {
+    return this.sortDirection === 'asc' ? 'desc' : 'asc';
   }
 
   handleRowSelected(event) {

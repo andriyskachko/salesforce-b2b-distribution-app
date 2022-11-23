@@ -1,0 +1,44 @@
+<template>
+  <lightning-card
+    variant="narrow"
+    icon-name="standard:opportunity"
+    title="Deals (Opportunities)"
+    class="slds-p-around_xx-small"
+  >
+    <div class="slds-card__body slds-card__body_inner">
+      <div class="slds-p-top_small">
+        <div class="slds-grid slds-gutters">
+          <div class="slds-col slds-size_2-of-3">
+            <lightning-input
+              type="search"
+              label="Search Deals"
+              value={searchString}
+              onchange={handleSearch}
+            ></lightning-input>
+          </div>
+          <div class="slds-col slds-size_1-of-3">
+            <lightning-input
+              type="checkbox"
+              label="Show ongoing only"
+              checked={showOngoingOnly}
+              onchange={handleChange}
+            ></lightning-input>
+          </div>
+        </div>
+        <c-datatable-pagination
+          key-field="id"
+          display-amount={displayAmount}
+          columns={columns}
+          source-data={data}
+          default-sort-direction={defaultSortDirection}
+          sorted-by={sortedBy}
+          onrowsselected={handleRowSelection}
+          onsorted={handleSort}
+          options={options}
+          hide-checkbox-column
+          object-api-name={objectApiName}
+        ></c-datatable-pagination>
+      </div>
+    </div>
+  </lightning-card>
+</template>

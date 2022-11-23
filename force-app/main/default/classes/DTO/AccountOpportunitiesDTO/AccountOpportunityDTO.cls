@@ -16,4 +16,7 @@ public with sharing class AccountOpportunityDTO {
 
   @AuraEnabled
   public String accountUrl;
+
+  @AuraEnabled
+  public String closeDate;
 }

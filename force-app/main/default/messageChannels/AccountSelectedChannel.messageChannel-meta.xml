@@ -5,7 +5,7 @@
     <description
   >Channel for communicating the current selected Accounts for a User (Sales Manager)</description>
     <lightningMessageFields>
-        <fieldName>lstAccountId</fieldName>
-        <description>List of Account IDs</description>
+        <fieldName>lstAccountIds</fieldName>
+        <description>List of Account Ids</description>
     </lightningMessageFields>
 </LightningMessageChannel>

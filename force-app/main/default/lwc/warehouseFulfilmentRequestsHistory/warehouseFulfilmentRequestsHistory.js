@@ -45,13 +45,16 @@ export default class WarehouseFulfilmentRequestsHistory extends LightningElement
   subscriptions = [];
   /** @type {FulfilmentRequestDTO[]} */
   requests = [];
+  error;
 
   @wire(getFulfilmentRequestsByWarehouseId, { warehouseId: '$warehouseId' })
   wiredRequests({ error, data }) {
     if (data) {
       this.requests = data;
+      this.error = undefined;
     } else if (error) {
-      console.log(error);
+      this.erorr = error;
+      this.requests = [];
     }
   }
 

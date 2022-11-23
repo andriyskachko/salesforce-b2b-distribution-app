@@ -28,8 +28,11 @@ interface RegionPayload {
   regionId: string;
 }
 
+// interface OpportunitiesPayload {
+// }
+
 interface AccountsPayload {
-  lstAccountId: string[];
+  lstAccountIds: string[];
 }
 
 interface ProductItemDTO {
@@ -87,4 +90,14 @@ interface AccountDTO {
   assignedAt: string;
   lastContactedAt: string;
   yearStarted: string;
+}
+
+interface AccountOpportunityDTO {
+  id: string;
+  name: string;
+  url: string;
+  stage: string;
+  accountName: string;
+  accountUrl: string;
+  closeDate: string;
 }

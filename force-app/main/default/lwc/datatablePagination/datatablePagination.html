@@ -48,6 +48,7 @@
       sorted-by={sortedBy}
       onsort={handleSort}
       onrowselection={handleRowSelected}
+      hide-checkbox-column={hideCheckboxColumn}
     >
     </lightning-datatable>
 
@@ -71,10 +72,9 @@
       <img
         src="/projRes/ui-home-private/emptyStates/noEvents.svg"
         class="slds-illustration__svg"
-        alt="No Customers assigned yet"
       />
       <div class="slds-text-color_weak">
-        <h3 class="slds-text-heading_medium">No Customers found.</h3>
+        <h3 class="slds-text-heading_medium">No {objectApiName} found.</h3>
       </div>
     </div>
   </template>

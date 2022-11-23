@@ -1,8 +1,14 @@
 import { LightningElement, wire } from 'lwc';
-import { MessageContext, publish } from 'lightning/messageService';
+import {
+  MessageContext,
+  publish,
+  APPLICATION_SCOPE
+} from 'lightning/messageService';
 import AccountSelectedChannel from '@salesforce/messageChannel/AccountSelectedChannel__c';
+import ACCOUNT_OBJECT from '@salesforce/schema/Account';
 import getSalesManagerAssignedCustomers from '@salesforce/apex/AccountController.getSalesManagerAssignedCustomers';
 import Id from '@salesforce/user/Id';
+import './customers.css';
 
 /** @type {DatatableColumn[]} */
 const COLUMNS = [
@@ -43,6 +49,7 @@ const OPTIONS = [
 ];
 
 export default class Customers extends LightningElement {
+  objectApiName = ACCOUNT_OBJECT.objectApiName;
   userId = Id;
   /** @type {AccountDTO[]} */
   _accounts = [];
@@ -89,11 +96,10 @@ export default class Customers extends LightningElement {
   }
 
   publishPayload() {
-    publish(
-      this.messageContext,
-      AccountSelectedChannel,
-      this.selectedAccounts.map((a) => a.id)
-    );
+    const payload = { lstAccountIds: this.selectedAccounts.map((a) => a.id) };
+    publish(this.messageContext, AccountSelectedChannel, payload, {
+      scope: APPLICATION_SCOPE
+    });
   }
 
   handleSearch(event) {
@@ -128,6 +134,7 @@ export default class Customers extends LightningElement {
     parsedData.sort((a, b) => {
       a = key(a) ? key(a) : '';
       b = key(b) ? key(b) : '';
+      // @ts-ignore
       return isReverse * ((a > b) - (b > a));
     });
     this._filteredAccounts = parsedData;

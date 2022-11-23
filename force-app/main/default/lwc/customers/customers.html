@@ -1,7 +1,7 @@
 <template>
   <lightning-card
     variant="narrow"
-    icon-name="standard:instore_locations"
+    icon-name="standard:customers"
     title="Assigned Customers"
     class="slds-p-around_xx-small"
   >
@@ -22,6 +22,7 @@
           onrowsselected={handleRowSelection}
           onsorted={handleSort}
           options={options}
+          object-api-name={objectApiName}
         ></c-datatable-pagination>
       </div>
     </div>
