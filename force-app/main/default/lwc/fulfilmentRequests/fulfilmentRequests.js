@@ -36,7 +36,7 @@ const OWN_RECORD_FIELDS = [
   DUE_DATE_FIELD
 ];
 
-export default class WarehouseFulfilmentRequestsHistory extends LightningElement {
+export default class FulfilmentRequests extends LightningElement {
   modalFields = MODAL_FIELDS;
   ownRecordFields = OWN_RECORD_FIELDS;
   objectApiName = FULFILMENT_REQUEST_OBJECT;

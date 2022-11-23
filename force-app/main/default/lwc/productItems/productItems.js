@@ -50,7 +50,7 @@ const COLUMNS = [
   }
 ];
 
-export default class WarehouseProductsTable extends LightningElement {
+export default class ProductItems extends LightningElement {
   searchString = '';
   defaultSortDirection = 'asc';
   sortDirection = 'asc';
