@@ -51,6 +51,7 @@ export default class WarehousePicker extends LightningElement {
   initSubscriptions() {
     this.subscribeToRegionSelectedMessageChannel();
   }
+
   terminateSubscriptions() {
     this.subscriptions.forEach((sub) => {
       unsubscribe(sub);

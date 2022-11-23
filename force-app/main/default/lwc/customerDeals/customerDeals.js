@@ -72,7 +72,7 @@ export default class CustomerDeals extends LightningElement {
   pageAccounts = [];
   options = OPTIONS;
   displayAmount = OPTIONS[0].value;
-  showOngoingOnly = true;
+  showClosedOnly = false;
 
   @wire(getOpportunitiesForAccounts, { accountIds: '$accountIds' })
   wiredOpportunities({ error, data }) {
@@ -127,7 +127,7 @@ export default class CustomerDeals extends LightningElement {
   }
 
   handleChange() {
-    this.showOngoingOnly = !this.showOngoingOnly;
+    this.showClosedOnly = !this.showClosedOnly;
     this.searchString = '';
     this._filteredOpportunities = this.opportunities;
   }
@@ -140,9 +140,9 @@ export default class CustomerDeals extends LightningElement {
 
   /** @type {AccountOpportunityDTO[]} */
   get opportunities() {
-    return this.showOngoingOnly
-      ? this._opportunities.filter(
-          (o) => !o.stage.toLowerCase().includes('closed')
+    return this.showClosedOnly
+      ? this._opportunities.filter((o) =>
+          o.stage.toLowerCase().includes('closed')
         )
       : this._opportunities;
   }
