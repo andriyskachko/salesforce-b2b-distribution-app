@@ -105,7 +105,11 @@ export default class Customers extends LightningElement {
   handleSearch(event) {
     this.searchString = event.detail.value.toLowerCase();
     this._filteredAccounts = this._accounts.filter((record) => {
-      const recordString = JSON.stringify(record).toLowerCase();
+      // eslint-disable-next-line no-unused-vars
+      const { id, url, assignedBy, ...recordData } = record;
+      const recordString = JSON.stringify(
+        Object.values(recordData)
+      ).toLowerCase();
       const regex = new RegExp(this.searchString);
       return regex.test(recordString);
     });

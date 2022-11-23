@@ -130,7 +130,20 @@ export default class WarehouseProductsTable extends LightningElement {
   handleSearch(event) {
     this.searchString = event.detail.value.toLowerCase();
     this._filteredData = this._data.filter((record) => {
-      const recordString = JSON.stringify(record).toLowerCase();
+      const {
+        // eslint-disable-next-line no-unused-vars
+        productItemId,
+        // eslint-disable-next-line no-unused-vars
+        productItemUrl,
+        // eslint-disable-next-line no-unused-vars
+        productId,
+        // eslint-disable-next-line no-unused-vars
+        productUrl,
+        ...recordData
+      } = record;
+      const recordString = JSON.stringify(
+        Object.values(recordData)
+      ).toLowerCase();
       const regex = new RegExp(this.searchString);
       return regex.test(recordString);
     });
@@ -166,6 +179,7 @@ export default class WarehouseProductsTable extends LightningElement {
     parsedData.sort((a, b) => {
       a = key(a) ? key(a) : '';
       b = key(b) ? key(b) : '';
+      // @ts-ignore
       return isReverse * ((a > b) - (b > a));
     });
     this._filteredData = parsedData;
