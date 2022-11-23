@@ -1,4 +1,4 @@
-public with sharing class AccountSalesRepTriggerController {
+public with sharing class AccountHandler {
   public static void updateSalesManagerForAccountsOpportunities(
     List<Account> newAccounts,
     Map<Id, Account> oldAccountsMap

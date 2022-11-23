@@ -1,4 +1,4 @@
-public with sharing class ProductItemTriggerController {
+public with sharing class ProductItemHandler {
   public static void validateProductExistanceInInventory(
     List<ProductItem> lstProductItemOnTrigger
   ) {
@@ -23,7 +23,7 @@ public with sharing class ProductItemTriggerController {
         p.LocationId
       );
       if (
-        ProductItemTriggerController.productExistsInLocationProductItems(
+        ProductItemHandler.productExistsInLocationProductItems(
           p.Product2Id,
           lstOldProductItem
         ) == true

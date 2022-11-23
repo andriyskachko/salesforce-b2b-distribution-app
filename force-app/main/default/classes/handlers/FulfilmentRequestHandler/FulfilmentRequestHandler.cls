@@ -1,4 +1,4 @@
-public with sharing class FulfilmentRequestTriggerController {
+public with sharing class FulfilmentRequestHandler {
   private static Boolean productItemExistsOnLocation(
     Id productItemId,
     Set<Id> setProductItemId
@@ -50,7 +50,7 @@ public with sharing class FulfilmentRequestTriggerController {
     for (Fulfilment_Request__c f : lstRequests) {
       Set<Id> setProductItemId = mapLocationProductItem.get(f.LocationId__c);
       if (
-        FulfilmentRequestTriggerController.productItemExistsOnLocation(
+        FulfilmentRequestHandler.productItemExistsOnLocation(
           f.Product_ItemId__c,
           setProductItemId
         ) == false

@@ -1,4 +1,4 @@
-public with sharing class OpportunitySalesRepTriggerController {
+public with sharing class OpportunityHandler {
   private static List<Opportunity> getUpdatedSalesRepOnOpportunities(
     List<Opportunity> opportunities
   ) {
@@ -19,7 +19,7 @@ public with sharing class OpportunitySalesRepTriggerController {
   public static void updateSalesRepOnOpportunities(
     List<Opportunity> opportunities
   ) {
-    List<Opportunity> updatedOpps = OpportunitySalesRepTriggerController.getupdatedSalesRepOnOpportunities(
+    List<Opportunity> updatedOpps = OpportunityHandler.getupdatedSalesRepOnOpportunities(
       opportunities
     );
     update updatedOpps;

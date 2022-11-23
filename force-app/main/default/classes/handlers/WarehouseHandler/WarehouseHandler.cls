@@ -1,4 +1,4 @@
-public with sharing class WarehouseTriggerController {
+public with sharing class WarehouseHandler {
   private static Warehouse__c updateWarehouseLocationId(
     Id warehouseId,
     Id locationId
@@ -33,7 +33,7 @@ public with sharing class WarehouseTriggerController {
 
     for (Id warehouseId : mapWarehouseToLocation.keySet()) {
       Schema.Location location = mapWarehouseToLocation.get(warehouseId);
-      Warehouse__c updatedWarehouse = WarehouseTriggerController.updateWarehouseLocationId(
+      Warehouse__c updatedWarehouse = WarehouseHandler.updateWarehouseLocationId(
         warehouseId,
         location.Id
       );
