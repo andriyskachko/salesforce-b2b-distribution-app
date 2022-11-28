@@ -13,7 +13,7 @@ public with sharing class AccountController {
         Assigned_ById__r.Name,
         Assigned_At__c,
         YearStarted,
-        Last_Contacted_At__c
+        LastActivityDate
       FROM Account
       WHERE Sales_ManagerId__c = :userId
       WITH SECURITY_ENFORCED
@@ -29,8 +29,9 @@ public with sharing class AccountController {
       acct.assignedByUrl = a.Assigned_ById__c != null
         ? URL.getSalesforceBaseUrl().toExternalForm() + '/' + a.Assigned_ById__c
         : '';
+
+      acct.lastContactedAt = String.valueOfGmt(a.LastActivityDate);
       acct.assignedAt = String.valueOfGmt(a.Assigned_At__c);
-      acct.lastContactedAt = String.valueOfGmt(a.Last_Contacted_At__c);
       acct.yearStarted = a.YearStarted;
       lstAcct.add(acct);
     }
