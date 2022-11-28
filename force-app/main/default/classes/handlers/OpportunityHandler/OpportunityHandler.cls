@@ -24,4 +24,41 @@ public with sharing class OpportunityHandler {
     );
     update updatedOpps;
   }
+
+  public static void updateLastOpportunityDateOnAccounts(
+    List<Opportunity> opportunities
+  ) {
+    List<Account> lstUpdatedAccts = OpportunityHandler.getUpdatedLastOpportunityCreatedOnAccounts(
+      opportunities
+    );
+
+    update lstUpdatedAccts;
+  }
+
+  private static List<Account> getUpdatedLastOpportunityCreatedOnAccounts(
+    List<Opportunity> opportunities
+  ) {
+    Map<Id, Date> mapUpdatedLastOpportunityDates = new Map<Id, Date>();
+
+    for (Opportunity o : opportunities) {
+      mapUpdatedLastOpportunityDates.put(o.AccountId, o.CreatedDate);
+    }
+
+    List<Id> lstAccountId = mapUpdatedLastOpportunityDates.keySet();
+
+    List<Account> lstUpdatedAccts = [
+      SELECT Id, Last_Opportunity_Created_At__c
+      FROM Account
+      WHERE Id IN :lstAccountId
+      WITH SECURITY_ENFORCED
+    ];
+
+    for (Account a : lstUpdatedAccts) {
+      a.Last_Opportunity_Created_At__c = mapUpdatedLastOpportunityDates.get(
+        a.Id
+      );
+    }
+
+    return updatedAccts;
+  }
 }
