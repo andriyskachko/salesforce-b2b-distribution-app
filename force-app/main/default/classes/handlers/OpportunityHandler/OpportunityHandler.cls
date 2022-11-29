@@ -41,10 +41,10 @@ public with sharing class OpportunityHandler {
     Map<Id, Date> mapUpdatedLastOpportunityDates = new Map<Id, Date>();
 
     for (Opportunity o : opportunities) {
-      mapUpdatedLastOpportunityDates.put(o.AccountId, o.CreatedDate);
+      mapUpdatedLastOpportunityDates.put(o.AccountId, o.CreatedDate.date());
     }
 
-    List<Id> lstAccountId = mapUpdatedLastOpportunityDates.keySet();
+    Set<Id> lstAccountId = mapUpdatedLastOpportunityDates.keySet();
 
     List<Account> lstUpdatedAccts = [
       SELECT Id, Last_Opportunity_Created_At__c
@@ -59,6 +59,6 @@ public with sharing class OpportunityHandler {
       );
     }
 
-    return updatedAccts;
+    return lstUpdatedAccts;
   }
 }
