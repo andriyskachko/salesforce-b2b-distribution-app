@@ -1,4 +1,4 @@
-public with sharing class SalesManagerCustomerReminderDTO {
+public with sharing class NotificationReminder {
   public CustomNotificationType notificationType;
   public String title;
   public String body;

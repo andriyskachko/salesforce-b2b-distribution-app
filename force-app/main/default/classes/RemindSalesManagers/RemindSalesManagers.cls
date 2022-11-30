@@ -33,7 +33,7 @@ public with sharing class RemindSalesManagers {
     ];
 
     for (Account a : lstAccount) {
-      SalesManagerCustomerReminderDTO reminder = new SalesManagerCustomerReminderDTO();
+      NotificationReminder reminder = new NotificationReminder();
       reminder.title = 'Contact a Customer who has not been contacted in 3 weeks!';
       reminder.body =
         'The Customer' +
@@ -44,23 +44,7 @@ public with sharing class RemindSalesManagers {
       reminder.targetId = a.Id;
       reminder.recipientsIds = new Set<String>{ a.Sales_ManagerId__c };
 
-      RemindSalesManagers.sendCustomNotification(reminder);
-    }
-  }
-
-  private static void sendCustomNotification(
-    SalesManagerCustomerReminderDTO reminder
-  ) {
-    Messaging.CustomNotification notification = new Messaging.CustomNotification();
-    notification.setTitle(reminder.title);
-    notification.setBody(reminder.body);
-    notification.setNotificationTypeId(reminder.notificationType.Id);
-    notification.setSenderId(reminder.senderId);
-    notification.setTargetId(reminder.targetId);
-    try {
-      notification.send(reminder.recipientsIds);
-    } catch (Exception e) {
-      System.debug('Problem sending notification: ' + e.getMessage());
+      Utils.sendCustomNotification(reminder);
     }
   }
 }
