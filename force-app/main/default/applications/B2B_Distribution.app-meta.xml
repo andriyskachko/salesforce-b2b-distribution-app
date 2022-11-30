@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#42A5F1</headerColor>
+        <shouldOverrideOrgTheme>true</shouldOverrideOrgTheme>
+    </brand>
+    <description>App for managing B2B Distribution Processes</description>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <label>B2B Distribution</label>
+    <navType>Standard</navType>
+    <tabs>Warehouse_Workspace</tabs>
+    <tabs>Customers_Workspace</tabs>
+    <tabs>standard-Opportunity</tabs>
+    <tabs>standard-Account</tabs>
+    <uiType>Lightning</uiType>
+    <utilityBar>B2B_Distribuiton_UtilityBar</utilityBar>
+</CustomApplication>
