@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomNotificationType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customNotifTypeName
+  >Regional Manager Customer Hasn&apos;t Been Contacted For Month</customNotifTypeName>
+    <desktop>true</desktop>
+    <masterLabel
+  >Regional Manager Customer Hasn&apos;t Been Contacted For Month</masterLabel>
+    <mobile>true</mobile>
+    <slack>false</slack>
+</CustomNotificationType>

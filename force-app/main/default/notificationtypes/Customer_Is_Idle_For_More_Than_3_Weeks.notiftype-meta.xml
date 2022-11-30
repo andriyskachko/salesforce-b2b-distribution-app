@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomNotificationType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customNotifTypeName
+  >Customer Is Idle For More Than 3 Weeks</customNotifTypeName>
+    <desktop>true</desktop>
+    <masterLabel>Customer Is Idle For More Than 3 Weeks</masterLabel>
+    <mobile>true</mobile>
+    <slack>false</slack>
+</CustomNotificationType>
