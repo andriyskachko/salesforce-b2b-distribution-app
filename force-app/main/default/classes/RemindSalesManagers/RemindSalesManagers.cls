@@ -1,19 +1,8 @@
 public with sharing class RemindSalesManagers {
   private static final Integer DAYS_CAP = 21;
 
-  public void sendCustomNotificationToSalesManagers() {
+  public static void sendCustomNotificationToSalesManagers() {
     String developerName = 'Sales_Manager_Customer_Has_Not_Been_Contacted_Notification';
-
-    CustomNotificationType notificationType = [
-      SELECT Id, DeveloperName
-      FROM CustomNotificationType
-      WHERE DeveloperName = :developerName
-      WITH SECURITY_ENFORCED
-    ];
-
-    if (notificationType == null) {
-      return;
-    }
 
     List<Account> lstAccount = [
       SELECT
@@ -32,19 +21,14 @@ public with sharing class RemindSalesManagers {
       LIMIT 5000
     ];
 
-    for (Account a : lstAccount) {
-      NotificationReminder reminder = new NotificationReminder();
-      reminder.title = 'Contact a Customer who has not been contacted in 3 weeks!';
-      reminder.body =
-        'The Customer' +
-        a.Name +
-        'has not been contacted for 3 or more weeks.';
-      reminder.notificationType = notificationType;
-      reminder.senderId = a.OwnerId;
-      reminder.targetId = a.Id;
-      reminder.recipientsIds = new Set<String>{ a.Sales_ManagerId__c };
+    CustomNotifications.ReminderNotification reminderNotification = new CustomNotifications.ReminderNotification();
+    reminderNotification.title = 'Contact a Customer who has not been contacted in 3 weeks!';
+    reminderNotification.body = 'A Customer has not been contacted for 3 or more weeks, please review.';
 
-      Utils.sendCustomNotification(reminder);
-    }
+    CustomNotifications.sendCustomerReminders(
+      developerName,
+      reminderNotification,
+      lstAccount
+    );
   }
 }
