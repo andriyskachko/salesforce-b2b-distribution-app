@@ -12,7 +12,7 @@ import OPPORTUNITY_OBJECT from '@salesforce/schema/Opportunity';
 /** @type {DatatableColumn[]} */
 const COLUMNS = [
   {
-    label: 'Opportunity',
+    label: 'Deal',
     fieldName: 'url',
     type: 'url',
     typeAttributes: { label: { fieldName: 'name' } },
