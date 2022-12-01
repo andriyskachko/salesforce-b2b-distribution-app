@@ -42,7 +42,7 @@ public with sharing class CustomNotifications {
     customNotification.setSenderId(notification.senderId);
     customNotification.setTargetId(notification.targetId);
     try {
-      customNotification.send(notification.recipientsIds);
+      customNotification.send(notification.recipientsId);
     } catch (Exception e) {
       System.debug('Problem sending notification: ' + e.getMessage());
     }
