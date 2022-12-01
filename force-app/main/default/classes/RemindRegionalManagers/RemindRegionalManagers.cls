@@ -1,7 +1,7 @@
 public with sharing class RemindRegionalManagers {
   private static final Integer DAYS_CAP = 28;
 
-  public void sendCustomNotificationToRegionalManagers() {
+  public static void sendCustomNotificationToRegionalManagers() {
     String developerName = 'Regional_Manager_Customer_Hasnt_Been_Contacted_For_Month';
 
     CustomNotificationType notificationType = [
@@ -37,11 +37,11 @@ public with sharing class RemindRegionalManagers {
       reminder.body =
         'The Customer' +
         a.Name +
-        'has not been contacted for 1 or more months.';
+        'has not been contacted or made any orders for 1 or more months.';
       reminder.notificationType = notificationType;
       reminder.senderId = a.OwnerId;
       reminder.targetId = a.Id;
-      reminder.recipientsIds = new Set<String>{ a.Sales_ManagerId__c };
+      reminder.recipientsIds = new Set<String>{ a.Sales_ManagerId__c }; // Change to Regional Manager
 
       Utils.sendCustomNotification(reminder);
     }
