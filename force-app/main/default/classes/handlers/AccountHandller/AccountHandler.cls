@@ -1,5 +1,5 @@
 public with sharing class AccountHandler {
-  public static void updateSalesManagerForAccountsOpportunities(
+  public static void updateAccountsAndRelatedOpportunitites(
     List<Account> newAccounts,
     Map<Id, Account> oldAccountsMap
   ) {
@@ -40,8 +40,10 @@ public with sharing class AccountHandler {
       for (Opportunity o : a.Opportunities) {
         if (o.Sales_ManagerId__c == null) {
           o.Sales_ManagerId__c = a.Sales_ManagerId__c;
-          updatedOpportunities.add(o);
+        } else if (o.RegionId__c == null || o.RegionId__c != a.Region__c) {
+          o.RegionId__c = a.Region__c;
         }
+        updatedOpportunities.add(o);
       }
     }
 

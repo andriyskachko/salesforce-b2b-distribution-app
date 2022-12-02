@@ -1,5 +1,5 @@
 trigger Account on Account(after insert, after update) {
-  AccountHandler.updateSalesManagerForAccountsOpportunities(
+  AccountHandler.updateAccountsAndRelatedOpportunitites(
     Trigger.new,
     Trigger.oldMap
   );
