@@ -102,14 +102,14 @@ interface AccountOpportunityDTO {
   closeDate: string;
 }
 
-interface FilterOption {
-  value: string;
-  label: string;
-}
-
 interface OpportunitySummaryResultDTO {
   accountName: string;
   accountUrl: string;
   totalQuantity: number;
   totalAmount: number;
+}
+
+interface AccountSalesManagerDTO {
+  name: string;
+  id: string;
 }
