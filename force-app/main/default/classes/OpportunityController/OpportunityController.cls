@@ -2,7 +2,8 @@ public with sharing class OpportunityController {
   @AuraEnabled(cacheable=true)
   public static List<OpportunitySummaryResultDTO> getOpportunitiesSummary(
     String regionId,
-    String closeDateFilter
+    String closeDateFilter,
+    String salesManagerId
   ) {
     List<OpportunitySummaryResultDTO> lstResults = new List<OpportunitySummaryResultDTO>();
 
@@ -23,6 +24,7 @@ public with sharing class OpportunityController {
         CloseDate >= :startsAt
         AND CloseDate <= :endsAt
         AND RegionId__c = :regionId
+        AND Account.Sales_ManagerId__c = :salesManagerId
       WITH SECURITY_ENFORCED
       GROUP BY AccountId, Account.Name
       LIMIT 5000
@@ -40,5 +42,37 @@ public with sharing class OpportunityController {
     }
 
     return lstResults;
+  }
+
+  @AuraEnabled(cacheable=true)
+  public static List<AccountSalesManagerDTO> getSalesManagersForOpportunityAccounts(
+    String regionId,
+    String closeDateFilter,
+    String salesManagerId
+  ) {
+    Map<String, Date> dateRangeMap = Utils.getDateRangeFromDateLiteral(
+      closeDateFilter
+    );
+    Date startsAt = dateRangeMap.get('startsAt');
+    Date endsAt = dateRangeMap.get('endsAt');
+    List<AccountSalesManagerDTO> lstAccountSalesManagerDTO = new List<AccountSalesManagerDTO>();
+
+    for (Opportunity o : [
+      SELECT Account.Sales_ManagerId__c, Account.Sales_ManagerId__r.Name
+      FROM Opportunity
+      WHERE
+        CloseDate >= :startsAt
+        AND CloseDate <= :endsAt
+        AND RegionId__c = :regionId
+      WITH SECURITY_ENFORCED
+      LIMIT 5000
+    ]) {
+      AccountSalesManagerDTO salesManager = new AccountSalesManagerDTO();
+      salesManager.id = o.Account.Sales_ManagerId__c;
+      salesManager.name = o.Account.Sales_ManagerId__r.Name;
+      lstAccountSalesManagerDTO.add(salesManager);
+    }
+
+    return lstAccountSalesManagerDTO;
   }
 }
