@@ -101,3 +101,15 @@ interface AccountOpportunityDTO {
   accountUrl: string;
   closeDate: string;
 }
+
+interface FilterOption {
+  value: string;
+  label: string;
+}
+
+interface OpportunitySummaryResultDTO {
+  accountName: string;
+  accountUrl: string;
+  totalQuantity: number;
+  totalAmount: number;
+}
