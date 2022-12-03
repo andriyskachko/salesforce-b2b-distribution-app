@@ -30,11 +30,10 @@ public with sharing class OpportunityController {
       LIMIT 5000
     ]) {
       OpportunitySummaryResultDTO result = new OpportunitySummaryResultDTO();
+      String accountId = Utils.getStringValue(ar.get('AccountId'));
+      result.id = accountId;
       result.accountName = Utils.getStringValue(ar.get('Name'));
-
-      result.accountUrl = Utils.getRecordUrL(
-        Utils.getStringValue(ar.get('AccountId'))
-      );
+      result.accountUrl = Utils.getRecordUrL(accountId);
 
       result.totalQuantity = Utils.getIntegerValue(ar.get('totalQuantity'));
       result.totalAmount = Utils.getIntegerValue(ar.get('totalAmount'));
@@ -64,6 +63,7 @@ public with sharing class OpportunityController {
         CloseDate >= :startsAt
         AND CloseDate <= :endsAt
         AND RegionId__c = :regionId
+        AND Account.Sales_ManagerId__c != NULL
       WITH SECURITY_ENFORCED
       LIMIT 5000
     ]) {

@@ -18,8 +18,7 @@ const COLUMNS = [
     fieldName: 'accountUrl',
     type: 'url',
     typeAttributes: { label: { fieldName: 'accountName' } },
-    target: '_blank',
-    sortable: true
+    target: '_blank'
   },
   {
     label: 'Total Quantity Ordered',
@@ -38,29 +37,29 @@ const FILTER_OPTIONS = [ALL, LAST_WEEK, LAST_MONTH, LAST_YEAR];
 
 export default class ListOfCustomers extends LightningElement {
   /** @type {OpportunitySummaryResultDTO[]} */
-  summaryData = [];
+  _summaryData = [];
   /** @type {AccountSalesManagerDTO[]} */
   salesManagers = [];
   wiredSummaryError;
   wiredSalesManagersError;
   columns = COLUMNS;
   filterOptions = FILTER_OPTIONS;
-  currentFilterValue = ALL.value;
+  closeDateFilter = ALL.value;
   regionId = 'a013N0000051XDVQA2';
   salesManagerId = '';
 
   @wire(getOpportunitiesSummary, {
     regionId: '$regionId',
-    closeDateFilter: '$currentFilterValue',
+    closeDateFilter: '$closeDateFilter',
     salesManagerId: '$salesManagerId'
   })
   wiredSummaryData({ error, data }) {
     if (data) {
-      this.summaryData = data;
+      this._summaryData = data;
       this.wiredSummaryError = undefined;
       console.log(this.summaryData);
     } else if (error) {
-      this.summaryData = [];
+      this._summaryData = [];
       this.wiredSummaryError = error;
       console.log(this.wiredSummaryError);
     }
@@ -68,7 +67,7 @@ export default class ListOfCustomers extends LightningElement {
 
   @wire(getSalesManagersForOpportunityAccounts, {
     regionId: '$regionId',
-    closeDateFilter: '$currentFilterValue',
+    closeDateFilter: '$closeDateFilter',
     salesManagerId: '$salesManagerId'
   })
   wiredSalesManagers({ error, data }) {
@@ -83,16 +82,28 @@ export default class ListOfCustomers extends LightningElement {
     }
   }
 
-  /** @type {Option[]} */
-  get salesManagerOptions() {
-    return this.salesManagers.map((s) => ({
-      value: s.id,
-      label: s.name
-    }));
+  get summaryData() {
+    return this._summaryData;
   }
 
-  handleChange(event) {
+  /** @type {Option[]} */
+  get salesManagerOptions() {
+    return [
+      { label: 'All', value: '' },
+      ...this.salesManagers.map((s) => ({
+        value: s.id,
+        label: s.name
+      }))
+    ];
+  }
+
+  handleSalesManagerChange(event) {
     const salesManagerId = event.detail.value;
     this.salesManagerId = salesManagerId;
+  }
+
+  handleTimeFrameChange(event) {
+    const timeFrame = event.detail.value;
+    this.closeDateFilter = timeFrame;
   }
 }

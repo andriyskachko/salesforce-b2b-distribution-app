@@ -1,1 +1,24 @@
-<template> </template>
+<template>
+  <lightning-card>
+    <lightning-combobox
+      name="Sales Manager"
+      label="Sales Manager"
+      value={salesManagerId}
+      options={salesManagerOptions}
+      onchange={handleSalesManagerChange}
+    ></lightning-combobox>
+    <lightning-combobox
+      name="Time Frame"
+      label="Time Frame"
+      value={closeDateFilter}
+      options={filterOptions}
+      onchange={handleTimeFrameChange}
+    ></lightning-combobox>
+
+    <lightning-datatable
+      data={summaryData}
+      columns={columns}
+      key-field="id"
+    ></lightning-datatable>
+  </lightning-card>
+</template>
