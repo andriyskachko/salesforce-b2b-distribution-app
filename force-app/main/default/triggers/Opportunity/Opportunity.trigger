@@ -11,6 +11,6 @@ trigger Opportunity on Opportunity(after insert, after update) {
     WITH SECURITY_ENFORCED
   ];
 
-  OpportunityHandler.updateSalesRepOnOpportunities(lstOpps);
-  OpportunityHandler.updateLastOpportunityDateOnAccounts(lstOpps);
+  OpportunityHandler.updateOpps(lstOpps);
+
 }

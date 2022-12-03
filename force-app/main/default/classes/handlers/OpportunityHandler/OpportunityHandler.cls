@@ -16,25 +16,6 @@ public with sharing class OpportunityHandler {
     return updatedOpps;
   }
 
-  public static void updateSalesRepOnOpportunities(
-    List<Opportunity> opportunities
-  ) {
-    List<Opportunity> updatedOpps = OpportunityHandler.getupdatedSalesRepOnOpportunities(
-      opportunities
-    );
-    update updatedOpps;
-  }
-
-  public static void updateLastOpportunityDateOnAccounts(
-    List<Opportunity> opportunities
-  ) {
-    List<Account> lstUpdatedAccts = OpportunityHandler.getUpdatedLastOpportunityCreatedOnAccounts(
-      opportunities
-    );
-
-    update lstUpdatedAccts;
-  }
-
   private static List<Account> getUpdatedLastOpportunityCreatedOnAccounts(
     List<Opportunity> opportunities
   ) {
@@ -60,5 +41,27 @@ public with sharing class OpportunityHandler {
     }
 
     return lstUpdatedAccts;
+  }
+
+  public static void updateOpps(List<Opportunity> opps) {
+    List<Account> lstUpdatedAccts = OpportunityHandler.getUpdatedLastOpportunityCreatedOnAccounts(
+      opportunities
+    );
+
+    List<Opportunity> lstUpdatedOpps = OpportunityHandler.getupdatedSalesRepOnOpportunities(
+      opportunities
+    );
+
+    update lstUpdatedAccts;
+    update lstUpdatedOpps;
+  }
+
+  public static void sendNotificationIfWarehouseDoesNotHaveCapacity(
+    List<Opportunity> lstOpps
+  ) {
+    String developerName = 'Warehouse_Does_Not_Have_Opportunity_Products_Capacity';
+    Warehouse_Limit__mdt wl = Warehouse_Limit__mdt.getInstance(
+      'Warehouse_Limit__mdt'
+    );
   }
 }
