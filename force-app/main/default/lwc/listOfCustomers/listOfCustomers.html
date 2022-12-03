@@ -1,24 +1,40 @@
 <template>
-  <lightning-card>
-    <lightning-combobox
-      name="Sales Manager"
-      label="Sales Manager"
-      value={salesManagerId}
-      options={salesManagerOptions}
-      onchange={handleSalesManagerChange}
-    ></lightning-combobox>
-    <lightning-combobox
-      name="Time Frame"
-      label="Time Frame"
-      value={closeDateFilter}
-      options={filterOptions}
-      onchange={handleTimeFrameChange}
-    ></lightning-combobox>
-
-    <lightning-datatable
-      data={summaryData}
-      columns={columns}
-      key-field="id"
-    ></lightning-datatable>
+  <lightning-card
+    variant="narrow"
+    icon-name="standard:customers"
+    title="Customers Information"
+    class="slds-p-around_xx-small"
+  >
+    <div slot="actions">
+      <lightning-button
+        label="Create PDF Report"
+        title="Create PDF Report"
+        onclick={handleCreatePdf}
+        class="slds-m-left_x-small"
+      ></lightning-button>
+    </div>
+    <div class="slds-p-around_medium">
+      <lightning-combobox
+        name="Sales Manager"
+        label="Sales Manager"
+        value={salesManagerId}
+        options={salesManagerOptions}
+        onchange={handleSalesManagerChange}
+      ></lightning-combobox>
+      <lightning-combobox
+        name="Time Frame"
+        label="Time Frame"
+        value={closeDateFilter}
+        options={filterOptions}
+        onchange={handleTimeFrameChange}
+      ></lightning-combobox>
+    </div>
+    <div class="slds-card__body">
+      <lightning-datatable
+        data={summaryData}
+        columns={columns}
+        key-field="id"
+      ></lightning-datatable>
+    </div>
   </lightning-card>
 </template>

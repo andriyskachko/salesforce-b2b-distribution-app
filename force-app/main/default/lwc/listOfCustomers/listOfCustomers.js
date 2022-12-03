@@ -106,4 +106,8 @@ export default class ListOfCustomers extends LightningElement {
     const timeFrame = event.detail.value;
     this.closeDateFilter = timeFrame;
   }
+
+  handleCreatePdf(event) {
+    console.log('Hello World: ' + event);
+  }
 }
